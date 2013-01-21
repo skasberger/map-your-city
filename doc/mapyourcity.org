@@ -1,16 +1,217 @@
 
+# avatars
+identicons http://scott.sherrillmix.com/blog/blogger/wp_identicon/
+wavatars http://www.shamusyoung.com/twentysidedtale/?p=1462
+monsterid http://www.splitbrain.org/projects/monsterid
+retro https://retroavatar.appspot.com/
+upload own file => flask function
 
-* REQUIREMENT
+
+# questions
+- how to save the avatar
+- copyright sourcecode
+
+* REQUIREMENTS
+Develop a location based game for the Location-based Service Course, which is useful for the Open Street Map community worldwide.
+Purpose is, to validate different geoobject categories and their attributes
+- make fun
+- interactive gamedesign
+- use social components like reputation, web2.0
+- use location based data
+- use open government data from austria (for APPS4Austria challenge)
+- use Open Street Map data
+- useful for open street map
+- document and do in an open science way
+- document everything in english
+- build the software and the user participation so it is mainly selforganized and driven by the openstreetmap community
+- have the rights on the data and announce publication of it in accumulated way later on
+** GAME MODI
+- special points for completing objects or validating bugs http://keepright.ipax.at/report_map.php?zoom=14&lat=48.20808&lon=16.37221
+- balance between long term and short term incentives
+- report bugs in game and openstreetmap
+
+# ideas
+- spy: user or team can see all other users/team
+- invisibility: user is invisible against spy
+- freeze: user/team is not allowed to move => points punishment
+- punish other players or teams with minus points
+
+*** SINGLE PLAYER
+**** FREE FOR ALL 
+needs better naming
+change settings in game 
+
+Everyone can validate geoobjects based on different settings
+- category
+- missing attributes
+- area: radius (own position or fixed), district if available
+- actualization
+**** MAPPER OF THE WEEK
+Every week a different object category must be validated and there can be only one winner for it.
+You get a message every week for your new quest.
+One Week per month is enough => predefine cause of holidays, exame times and so on => for every region different
+**** RANDOM 
+generate list of user chosen number of geoobjects in an choosen area.
+i.e.: 100 Restaurants in graz 
+*** MULTI PLAYER
+Free setup based on
+- category
+- area: administrative, radius (own position or fixed)
+
+# mechanisms
+- startpoint of one team is the endpoint of another
+- team check in via buffer
+- show/hide players on the map
+- staged check in of points: first check in 2 points, seconde check in of member of same team 5 points
+- slow down game so no accidents happen
+
+**** IDEA x
+- give every team 
+
+**** DONT KNOW THE NAME
+Give every team a certain amount of objects. If you check out another object, you will get more points, than you get when you check out your own already owned object.
+**** MAPPER OF THE WEEK
+** SCORES
+badges for
+- 10^n, 2 * 10^n, 5* 10^n points
+- mapper of the week winner
+- mapper of the city: Graz, Vienna
+- more than xxx points in a week
+- more than xxx points in a day
+- more than xxx points in a year
+- most points in a year
+- most points in a month
+- more than 10^n hours played
+
+classes: 
+- milestones: points, time played, played games, 
+- achievements: mapper of the TIMEFRAME, mapper of the city TIMEFRAME
+- regional: graz, steiermark, austria, worldwide
+
+** QUALITY ASSURANCE
+- check if user input is often corrected and report this to local community
+- work together with local community
+** LAYOUT & DESIGN
+*** DESIGN
+*** BADGES
+*** SCREENS
+
+# Start Up
+- time played
+- actual score
+- settings
+- play
+- about
+
+# FFA setup
+select between
+- area
+  - fixed
+    - list predefined possibilities
+  - my location
+- category
+  - list predefined possibilities
+
+# Mapper of the Week
+you get a message 
+
+# countdown
+while setup will be calculated and loaded
+this should be alread in the gaming screen, but all data for the actual game has be hidden
+
+# highscore
+- worldwide
+- national
+- actual region
+
+# User
+- nickname
+- color
+- avatar
+
+# About
+- OpenStreetMap
+- Twitter Account
+- Game Description
+- Data Sources
+- Website
+- more
+- Privacy issues: during game you can be seen
+
+# Registration
+- username
+- email
+- password
+
+# Map
+- events will be shown
+- social media functionality
+- bug reporting
+- game infos
+- help: geoobjects, bug, 
+
+# sum up of current game session
+- socialize: screenshot via twitter
+- events happened
+- score made
+- time needed (if not fixed)
+- game description
+- replay (if possible)
+
+** SOCIAL MEDIA
+# twitter
+create own twitter account
+- create own hashtag
+** WEBSITE
+- create new game modi
+- add new regions
+- write summary for new regions
+- write summary for new game modi
+- construct functions for easy import of game modi
+- construct functions for easy import of regions
+- use piwik and publish user data
+*** STATS
+- visualized data: timelines, maps, etc.
+- search for highscores: list for all highscores
+** DOCUMENTATION
+- describe geoobjects and attributes
+- document all possible badges without image
+** LAYERS
+- grazwiki grazerbe.at
+- ogd graz orthophotos
+- wikitude
+- geoimage service gateway => ask for not restricted access!
+- openstreetmap
 * IMPLEMENTATION
-** 0.1
+** 0.1 - Basic FFA & Settings
 # tasks
+- implement FFA for Graz and radius
+- setup basic tables: user, history, sessions_singleplayer
+- implement registration
+- screens: start up, registration, settings, t
 
 *** SUMMARY
 *** DOCUMENTATION
+- use overpass API to get data
+- use OpenStreetMap API to write data
+- use OGD Graz Orthophotos
 **** CONFIGURATION
 *** LATER
+- objects in lower data density areas count more
+- use gravatar for avatar https://de.gravatar.com/
+- publish accumulated user data for free
+- Linz, Wien
+- add region specific points and quests: uhrturm, murinsel, etc
+- add gimicks and fun related stuff to quests: let this be made by the community
+- Stats, Website, Multiplayer, Design, Badges
 ** 0.2
 # tasks
+- badge for most points in graz (mapper of the city
+- badge for 1000 points
+- badge for 100 played hours
+- badge for most points in a year in graz
+- badge for most points in graz
+- badge for most points in graz
 
 *** SUMMARY
 *** DOCUMENTATION
@@ -23,63 +224,7 @@
 *** DOCUMENTATION
 **** CONFIGURATION
 *** LATER
-** 0.4
-# tasks
-
-*** SUMMARY
-*** DOCUMENTATION
-**** CONFIGURATION
-*** LATER
-** 0.5
-# tasks
-
-*** SUMMARY
-*** DOCUMENTATION
-**** CONFIGURATION
-*** LATER
-** 0.6
-# tasks
-
-*** SUMMARY
-*** DOCUMENTATION
-**** CONFIGURATION
-*** LATER
-** 0.7
-# tasks
-
-*** SUMMARY
-*** DOCUMENTATION
-**** CONFIGURATION
-*** LATER
-** 0.8
-# tasks
-
-*** SUMMARY
-*** DOCUMENTATION
-**** CONFIGURATION
-*** LATER
-** 0.9
-# tasks
-
-*** SUMMARY
-*** DOCUMENTATION
-**** CONFIGURATION
-*** LATER
-** 0.10
-# tasks
-
-*** SUMMARY
-*** DOCUMENTATION
-**** CONFIGURATION
-*** LATER
-** 0.11
-# tasks
-
-*** SUMMARY
-*** DOCUMENTATION
-**** CONFIGURATION
-*** LATER
-** 0.12
+** 0.x - TEMPLATE
 # tasks
 
 *** SUMMARY

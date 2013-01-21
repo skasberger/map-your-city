@@ -1,0 +1,46 @@
+<!doctype html>
+<head>
+
+	<title> {% block title %}{% endblock %} </title>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1.0, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta http-equiv="cleartype" content="on">
+	<meta http-equiv="expires" content="0">
+
+	<!-- For iPhone 4 with high-resolution Retina display: -->
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{url_for('static', filename='images/apple-touch-icon.png')}}">
+	<!-- For first-generation iPad: -->
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{url_for('static', filename='images/apple-touch-icon.png')}}">
+	<!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
+	<link rel="apple-touch-icon-precomposed" href="{{url_for('static', filename='images/apple-touch-icon-precomposed.png')}}">
+	<!-- For nokia devices and desktop browsers : -->
+	<link rel="shortcut icon" href="favicon.ico" />
+
+	<!-- jQuery Mobile CSS bits -->
+	<link rel="stylesheet" href="{{url_for('static', filename='css/jquery.mobile-1.2.0.min.css')}}" />
+
+	<link rel="stylesheet" href="{{url_for('static', filename='css/leaflet.css')}}" />
+	<!--[if lte IE 8]>
+	    <link rel="stylesheet" href="{{url_for('static', filename='css/leaflet.ie.css')}}" />
+	<![endif]-->
+
+	<script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.2-min.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename='js/jquery.mobile-1.2.0.min.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename='js/application.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename='js/leaflet.js')}}"></script>
+
+</head>
+<body>
+	<div data-role="page">
+
+	{% block body %}
+
+	{% endblock %}
+	</div>
+</body>
+</html>

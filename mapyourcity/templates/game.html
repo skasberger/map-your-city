@@ -1,0 +1,70 @@
+{% extends "layout_main.html" %}
+
+{% block title_tag %}
+	Game
+{% endblock %}
+
+{% block body %}
+	<div id="header" data-theme="b" data-role="header">
+		<h1>Map Your City</h1>
+	</div>
+    <div id="map"/>
+<script>
+var map = L.map('map');
+
+        L.tileLayer('http://{s}.tile.cloudmade.com/cd33cf0ed5eb47bea3410fa19efe3c6a/1714/256/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery Â© <a href="http://cloudmade.com">CloudMade</a>'
+        }).addTo(map);
+
+        function onLocationFound(e) {
+            var radius = e.accuracy / 2;
+
+            L.marker(e.latlng).addTo(map)
+                .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+            L.circle(e.latlng, radius).addTo(map);
+        }
+
+        function onLocationError(e) {
+            alert(e.message);
+        }
+
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
+
+        map.locate({setView: true, maxZoom: 16});
+
+$(document).ready(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
+
+$(window).resize(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
+
+</script>
+<div id="content" data-role="content">  
+</div> 
+</div>
+<div id="nav" data-role="navbar" data-iconpos="top">
+                    <ul>
+                        <li>
+                            <a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="star" class="ui-btn-active ui-state-persist">
+                                Game
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('show_score')}}" data-transition="fade" data-theme="b" data-icon="grid">
+                                Scores
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('show_player')}}" data-transition="fade" data-theme="b" data-icon="gear">
+                                Player
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('show_info')}}" data-transition="fade" data-theme="b" data-icon="info">
+                                Info
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+{% endblock %}

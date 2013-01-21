@@ -1,0 +1,51 @@
+{% extends "layout_main.html" %}
+
+{% block meta_title %}
+	Login
+{% endblock %}
+
+{% block body %}
+
+	<div data-role="header" data-theme="b">
+		<h1>Login</h1>
+	</div>
+
+	<div data-role="content">
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('login') }}" method="post" data-ajax="false" class="ui-body ui-body-c ui-corner-all">
+	<div data-role="fieldcontain" class="ui-hide-label">
+		<label for="username" class="ui-hidden-accessible">Username:</label>
+		<input type="text" name="username" id="username" value="" data-clear-btn="true" placeholder="Username" />
+	</div>
+	<div data-role="fieldcontain" class="ui-hide-label">
+		<label for="password">Password:</label>
+		<input type="password" name="password" id="password" value="" placeholder="Password"/>
+	</div>
+	<button data-disabled="false" class="ui-btn-hidden" type="submit" data-theme="c" name="submit" value="submit-value">Submit</button>
+  </form>
+  <a href="{{ url_for('register') }}" data-role="button">Register</a>
+  <div id="nav" data-role="navbar" data-iconpos="top">
+                    <ul>
+                        <li>
+                            <a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="star">
+                                Game
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('show_score')}}" data-transition="fade" data-theme="b" data-icon="grid">
+                                Scores
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('show_player')}}" data-transition="fade" data-theme="b" data-icon="gear">
+                                Player
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('show_info')}}" data-transition="fade" data-theme="b" data-icon="info">
+                                Info
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+{% endblock %}

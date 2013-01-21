@@ -1,0 +1,39 @@
+{% extends "layout_main.html" %}
+
+{% block title_tag %}
+	Game
+{% endblock %}
+
+{% block body %}
+	<div id="header" data-theme="b" data-role="header">
+		<h1>Map Your City</h1>
+	</div>
+    <div id="map" height="100%"/>
+<div id="content" data-role="content">  
+</div> 
+</div>
+<div id="nav" data-role="navbar" data-iconpos="top">
+                    <ul>
+                        <li>
+                            <a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="star">
+                                Game
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('show_score')}}" data-transition="fade" data-theme="b" data-icon="grid" class="ui-btn-active ui-state-persist">
+                                Scores
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('show_player')}}" data-transition="fade" data-theme="b" data-icon="gear">
+                                Player
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('show_info')}}" data-transition="fade" data-theme="b" data-icon="info">
+                                Info
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+{% endblock %}
