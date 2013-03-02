@@ -1,3 +1,6 @@
+- login with open street map account => save password not in the database when it is possible to save it on the phone
+- agreggate stats every week for every user and overwrite the history
+- jedeR sollte den OSM account nutzen, wegen History speicherung
 
 # avatars
 identicons http://scott.sherrillmix.com/blog/blogger/wp_identicon/
@@ -6,6 +9,13 @@ monsterid http://www.splitbrain.org/projects/monsterid
 retro https://retroavatar.appspot.com/
 upload own file => flask function
 
+
+abfrage bei spielabruch, ob es irgend ein problem gegeben hat und auto bug report
+alle 20-30 punkte eine interaktion zw. user und spiel: zB wenn du heute noch 10 pois validierst bekommst du zusatzpunkte
+language support
+layer: special, osm default, orthophotos
+regex für email bei registration
+netidee einreichen
 
 # questions
 - how to save the avatar
@@ -65,7 +75,7 @@ Free setup based on
 - staged check in of points: first check in 2 points, seconde check in of member of same team 5 points
 - slow down game so no accidents happen
 
-**** IDEA x
+**** IDEA
 - give every team 
 
 **** DONT KNOW THE NAME
@@ -231,3 +241,28 @@ create own twitter account
 *** DOCUMENTATION
 **** CONFIGURATION
 *** LATER
+
+
+# pois
+- diet:vegan
+- diet:vegetarian => es gibt noch mehrere
+- smoking
+- wheelchair https://wiki.openstreetmap.org/wiki/Wheelchair
+- highway=bus_stop od. public_transport=platform
+- leisure=sports_centre od leisure=pitch
+- highway=crossing
+- amenity=bar 
+- amenity=cafe
+- amenity=restaurant
+- amenity=fast_food
+- shop=florist
+- shop=clothes
+- amenity=postal_office
+- amenity=mailbox
+
+
+* DOCUMENTATION
+Virutal Environment starten: 
+https://openshift.redhat.com/community/blogs/how-to-install-and-configure-a-python-flask-dev-environment-deploy-to-openshift
+. venv/bin/activate
+python runserver.py

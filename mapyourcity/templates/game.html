@@ -6,42 +6,119 @@
 
 {% block body %}
 	<div id="header" data-theme="b" data-role="header">
-		<h1>Map Your City</h1>
+		<h1 id="title">Map Your City</h1>
 	</div>
+    <div id="editObject" style="display: none">
+    <div data-role="fieldcontain">
+        <input type="hidden" name="osm_id" id="osm_id" value="" data-clear-btn="true" placeholder="" />
+    </div>
+    <div data-role="fieldcontain">
+        <label for="name" >Name:</label>
+        <input type="text" name="name" id="name" value="" data-clear-btn="true" placeholder="Name" />
+    </div>
+        <div data-role="fieldcontain">
+        <label for="type" >Typ:</label>
+        <input type="text" name="type" id="type" value="" data-clear-btn="true" placeholder="Type" />
+    </div>
+    <div data-role="fieldcontain"><label for="selectmenu1">Wheelchair: </label><select name="Wheelchair" data-theme="b"><option value="yes">Yes</option><option value="no">No</option></select></div>
+    <br><br><br>
+    <button data-disabled="false" id="send" class="ui-btn-hidden" type="button" data-theme="c" onclick="sendData();">Submit</button>
+    <button data-disabled="false" class="ui-btn-hidden" type="reset" data-theme="c" name="reset" value="submit-value" onclick="$('#map').show();
+    $('#editObject').hide();">Cancel</button>
+    </div>
     <div id="map"/>
 <script>
-var map = L.map('map');
+//$(document).ready(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
 
-        L.tileLayer('http://{s}.tile.cloudmade.com/cd33cf0ed5eb47bea3410fa19efe3c6a/1714/256/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery Â© <a href="http://cloudmade.com">CloudMade</a>'
-        }).addTo(map);
+var map={};
+var userMarker;
 
-        function onLocationFound(e) {
-            var radius = e.accuracy / 2;
+    $(function () {
+        $("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);
+        $("#editObject").height($('html').height()-$("#nav").height()-$("#header").height()-1);
+      map = initMap();
+      map.zoomIn();
+      userMarker = L.marker(new L.LatLng(50.5, 30.5)).addTo(map);
+      map.on('locationfound', onLocationFound);
+      map.on('moveend', loadPoi);
+      loadPoi();
+      map.locate({watch: true, setView: true, maxZoom: 17, enableHighAccuracy: true});
+    });
 
-            L.marker(e.latlng).addTo(map)
-                .bindPopup("You are within " + radius + " meters from this point").openPopup();
+        function sendData() {
+      $.getJSON('{{ url_for('verify') }}', {
+        ObjectName: $('input[name="name"]').val(),
+        ObjectOSMID: $('input[name="osm_id"]').val(),
+        ObjectAttribute: 'wheelchair=1'
+      }, function(data) {
+        $("#title").text("Score: "+data.result);
+        $('#map').show();
+        $('#editObject').hide();
+      });
+      return false;
+    }
 
-            L.circle(e.latlng, radius).addTo(map);
+          function onLocationFound(e) {
+            userMarker.setLatLng(e.latlng);
+            userMarker.update();
         }
 
         function onLocationError(e) {
             alert(e.message);
         }
 
-        map.on('locationfound', onLocationFound);
-        map.on('locationerror', onLocationError);
+    function loadPoi() {
+      if (map.getZoom() < 15) {
+        return;
+      }
+      var restaurantIcon = L.icon({
+        iconUrl: '/static/images/icons/48-fork-and-knife.png',
+        iconSize: new L.Point(24, 24),
+        iconAnchor: new L.Point(8, 8),
+      });
+var barIcon = L.icon({
+        iconUrl: '/static/images/icons/88-beer-mug.png',
+        iconSize: new L.Point(24, 24),
+        iconAnchor: new L.Point(8, 8),
+      });
 
-        map.locate({setView: true, maxZoom: 16});
+      var overpassRestaurants = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=restaurant];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
+      var overpassBars = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=bar];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
 
-$(document).ready(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
+      function bindPopupOnData(data) {
+        var lmarker = L.marker([data.lat, data.lon], {
+        icon: L.icon({iconUrl: '/static/images/icons/'+data.tags.amenity+'.png', iconSize: new L.Point(16, 16), iconAnchor: new L.Point(8, 8)}),
+          title: data.tags.name
+        });
+        //lmarker.bindPopup(fillPopup(data.tags)).addTo(map);
+        lmarker.on('click',function(e) {
+    //alert(data.tags.name); // e is an event object (MouseEvent in this case)
+    $('#map').toggle();
+    $('#editObject').toggle();
+    $("input#name").val(data.tags.name);
+    $("input#type").val(data.tags.amenity);
+    $("input#osm_id").val(data.tags.id);
 
+    //alert(data.tags.id);
+});
+        lmarker.addTo(map);
+      }
+
+      function nodeFunction(data) {
+        if (! data.tags || ! data.tags.amenity ) return;
+        bindPopupOnData(data);
+      }
+
+      function handleNodeWayRelations(data) {
+        parseOverpassJSON(data, nodeFunction);
+      }
+
+      $.getJSON(overpassRestaurants, handleNodeWayRelations);
+      $.getJSON(overpassBars, handleNodeWayRelations);
+    }
 $(window).resize(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
-
-</script>
-<div id="content" data-role="content">  
-</div> 
+  </script>
+  <div id="content" data-role="content"></div>
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
                     <ul>

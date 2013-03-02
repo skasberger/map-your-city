@@ -1,6 +1,6 @@
 from mapyourcity import app, db
-from mapyourcity.models import Player
-from flask import Flask, request, session, g, redirect, url_for, \
+from mapyourcity.models import Player, POI
+from flask import Flask, request, session, g, jsonify, redirect, url_for, \
 	abort, render_template, flash
 
 @app.before_request
@@ -53,6 +53,19 @@ def register():
       flash('Successfully registered!')
       return redirect(url_for('login'))
   return render_template('register.html', error=error)
+
+@app.route('/verify')
+def verify():
+  if not g.player:
+    return redirect(url_for('login'))
+  osmid=  request.args.get('ObjectOSMID', 0, type=int)
+  name = request.args.get('ObjectName', '', type=str)
+  attribute = request.args.get('ObjectAttribute', '', type=str)
+  poi = POI(osmid, name, attribute, g.player.id)
+  db.session.add(poi)
+  g.player.points=g.player.points+1
+  db.session.commit()
+  return jsonify(result=g.player.points)
 
 @app.route('/scores')
 def show_score():

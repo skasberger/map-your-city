@@ -10,8 +10,11 @@
 	</div>
     <div id="map" height="100%"/></div> 
 <div id="content" data-role="content">  
-    <h2>{{ playername }}</h2>
-    <h2>{{ email }}</h2>
+    <table>
+    </table>
+    <b>Name: </b> {{ playername }}<br/>
+    <b>e-Mail: </b> {{ email }}
+    <br/>
     <a href="{{ url_for('logout') }}" data-role="button">Logout</a>
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">

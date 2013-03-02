@@ -16,6 +16,7 @@ class Player(db.Model):
 		self.email = email
 		self.set_password(password)
 		self.created_at = datetime.now()
+		self.points = 0
 
 	def set_password(self, password):
 		self.pw_hash = generate_password_hash(password)
@@ -34,10 +35,15 @@ class Team(db.Model):
 
 class POI(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	osm_id = db.Column(db.Integer, unique=True)
+	osm_id = db.Column(db.BIGINT, unique=False)
+	name = db.Column(db.String(160),unique=False)
+	attribute = db.Column(db.String(200),unique=False)
 	edited_by = db.Column(db.Integer, unique=False)
 
-	def __init__(self, edited_by=None, email=None):
+	def __init__(self, osm_id=None, name=None, attribute=None, edited_by=None):
+		self.osm_id = osm_id
+		self.name = name
+		self.attribute = attribute
 		self.edited_by = edited_by
 
 	def __repr__(self):
