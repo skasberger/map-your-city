@@ -5,28 +5,33 @@
 {% endblock %}
 
 {% block body %}
-	<div id="header" data-theme="b" data-role="header">
-		<h1 id="title">Map Your City</h1>
+<div id="header" data-theme="b" data-role="header">
+	<h1 id="title">Map Your City</h1>
+</div>
+<div id="editObject" style="display: none">
+	<div data-role="fieldcontain">
+		<input type="hidden" name="osm_id" id="osm_id" value="" data-clear-btn="true" placeholder="" />
 	</div>
-    <div id="editObject" style="display: none">
-    <div data-role="fieldcontain">
-        <input type="hidden" name="osm_id" id="osm_id" value="" data-clear-btn="true" placeholder="" />
-    </div>
-    <div data-role="fieldcontain">
-        <label for="name" >Name:</label>
-        <input type="text" name="name" id="name" value="" data-clear-btn="true" placeholder="Name" />
-    </div>
-        <div data-role="fieldcontain">
-        <label for="type" >Typ:</label>
-        <input type="text" name="type" id="type" value="" data-clear-btn="true" placeholder="Type" />
-    </div>
-    <div data-role="fieldcontain"><label for="selectmenu1">Wheelchair: </label><select name="Wheelchair" data-theme="b"><option value="yes">Yes</option><option value="no">No</option></select></div>
-    <br><br><br>
-    <button data-disabled="false" id="send" class="ui-btn-hidden" type="button" data-theme="c" onclick="sendData();">Submit</button>
-    <button data-disabled="false" class="ui-btn-hidden" type="reset" data-theme="c" name="reset" value="submit-value" onclick="$('#map').show();
-    $('#editObject').hide();">Cancel</button>
-    </div>
-    <div id="map"/>
+	<div data-role="fieldcontain">
+		<label for="name" >Name:</label>
+		<input type="text" name="name" id="name" value="" data-clear-btn="true" placeholder="Name" />
+	</div>
+	<div data-role="fieldcontain">
+		<label for="type" >Typ:</label>
+		<input type="text" name="type" id="type" value="" data-clear-btn="true" placeholder="Type" />
+	</div>
+	<div data-role="fieldcontain">
+		<label for="selectmenu1">Wheelchair: </label>
+		<select name="Wheelchair" data-theme="b">
+			<option value="yes">Yes</option>
+			<option value="no">No</option>
+		</select>
+	</div>
+	<br><br><br>
+	<button data-disabled="false" id="send" class="ui-btn-hidden" type="button" data-theme="c" onclick="sendData();">Submit</button>
+	<button data-disabled="false" class="ui-btn-hidden" type="reset" data-theme="c" name="reset" value="submit-value" onclick="$('#map').show(); $('#editObject').hide();">Cancel</button>
+</div>
+<div id="map"/>
 <script>
 //$(document).ready(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
 
@@ -34,8 +39,8 @@ var map={};
 var userMarker;
 
     $(function () {
-        $("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);
-        $("#editObject").height($('html').height()-$("#nav").height()-$("#header").height()-1);
+      $("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);
+      $("#editObject").height($('html').height()-$("#nav").height()-$("#header").height()-1);
       map = initMap();
       map.zoomIn();
       userMarker = L.marker(new L.LatLng(50.5, 30.5)).addTo(map);
@@ -45,27 +50,28 @@ var userMarker;
       map.locate({watch: true, setView: true, maxZoom: 17, enableHighAccuracy: true});
     });
 
-        function sendData() {
+    function sendData() {
       $.getJSON('{{ url_for('verify') }}', {
         ObjectName: $('input[name="name"]').val(),
         ObjectOSMID: $('input[name="osm_id"]').val(),
         ObjectAttribute: 'wheelchair=1'
-      }, function(data) {
-        $("#title").text("Score: "+data.result);
-        $('#map').show();
-        $('#editObject').hide();
+        }, 
+      function(data) {
+      $("#title").text("Score: "+data.result);
+      $('#map').show();
+      $('#editObject').hide();
       });
       return false;
     }
 
-          function onLocationFound(e) {
-            userMarker.setLatLng(e.latlng);
-            userMarker.update();
-        }
+    function onLocationFound(e) {
+      userMarker.setLatLng(e.latlng);
+      userMarker.update();
+    }
 
-        function onLocationError(e) {
-            alert(e.message);
-        }
+    function onLocationError(e) {
+      alert(e.message);
+    }
 
     function loadPoi() {
       if (map.getZoom() < 15) {
@@ -76,7 +82,7 @@ var userMarker;
         iconSize: new L.Point(24, 24),
         iconAnchor: new L.Point(8, 8),
       });
-var barIcon = L.icon({
+      var barIcon = L.icon({
         iconUrl: '/static/images/icons/88-beer-mug.png',
         iconSize: new L.Point(24, 24),
         iconAnchor: new L.Point(8, 8),
@@ -87,20 +93,20 @@ var barIcon = L.icon({
 
       function bindPopupOnData(data) {
         var lmarker = L.marker([data.lat, data.lon], {
-        icon: L.icon({iconUrl: '/static/images/icons/'+data.tags.amenity+'.png', iconSize: new L.Point(16, 16), iconAnchor: new L.Point(8, 8)}),
+          icon: L.icon({iconUrl: '/static/images/icons/'+data.tags.amenity+'.png', iconSize: new L.Point(16, 16), iconAnchor: new L.Point(8, 8)}),
           title: data.tags.name
         });
         //lmarker.bindPopup(fillPopup(data.tags)).addTo(map);
         lmarker.on('click',function(e) {
-    //alert(data.tags.name); // e is an event object (MouseEvent in this case)
-    $('#map').toggle();
-    $('#editObject').toggle();
-    $("input#name").val(data.tags.name);
-    $("input#type").val(data.tags.amenity);
-    $("input#osm_id").val(data.tags.id);
+          //alert(data.tags.name); // e is an event object (MouseEvent in this case)
+          $('#map').toggle();
+          $('#editObject').toggle();
+          $("input#name").val(data.tags.name);
+          $("input#type").val(data.tags.amenity);
+          $("input#osm_id").val(data.tags.id);
 
-    //alert(data.tags.id);
-});
+          //alert(data.tags.id);
+        });
         lmarker.addTo(map);
       }
 
@@ -116,32 +122,16 @@ var barIcon = L.icon({
       $.getJSON(overpassRestaurants, handleNodeWayRelations);
       $.getJSON(overpassBars, handleNodeWayRelations);
     }
-$(window).resize(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
-  </script>
-  <div id="content" data-role="content"></div>
+    $(window).resize(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
+</script>
+	<div id="content" data-role="content"></div>
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
-                    <ul>
-                        <li>
-                            <a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="star" class="ui-btn-active ui-state-persist">
-                                Game
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{url_for('show_score')}}" data-transition="fade" data-theme="b" data-icon="grid">
-                                Scores
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{url_for('show_player')}}" data-transition="fade" data-theme="b" data-icon="gear">
-                                Player
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{url_for('show_info')}}" data-transition="fade" data-theme="b" data-icon="info">
-                                Info
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+	<ul>
+		<li><a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="star" class="ui-btn-active ui-state-persist">Game</a></li>
+		<li><a href="{{url_for('show_score')}}" data-transition="fade" data-theme="b" data-icon="grid">Scores</a></li>
+		<li><a href="{{url_for('show_player')}}" data-transition="fade" data-theme="b" data-icon="gear">Player</a></li>
+		<li><a href="{{url_for('show_info')}}" data-transition="fade" data-theme="b" data-icon="info">Info</a></li>
+	</ul>
+</div>
 {% endblock %}

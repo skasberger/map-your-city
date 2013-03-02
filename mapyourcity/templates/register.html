@@ -6,54 +6,38 @@
 
 {% block body %}
 
-	<div data-role="header" data-theme="b">
-		<h1>Register</h1>
-	</div>
-
-	<div data-role="content">
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-  <form action="{{ url_for('register') }}" method="post" data-ajax="false" class="ui-body ui-body-c ui-corner-all">
-	<div data-role="fieldcontain" class="ui-hide-label">
-		<label for="username" class="ui-hidden-accessible">Username:</label>
-		<input type="text" name="username" id="username" value="" data-clear-btn="true" placeholder="Username" />
-	</div>
-	<div data-role="fieldcontain" class="ui-hide-label">
-		<label for="email" class="ui-hidden-accessible">e-Mail:</label>
-		<input type="text" name="email" id="email" value="" data-clear-btn="true" placeholder="E-Mail" />
-	</div>
-	<div data-role="fieldcontain" class="ui-hide-label">
-		<label for="password">Password:</label>
-		<input type="password" name="password" id="password" value="" placeholder="Password"/>
-	</div>
-	<div data-role="fieldcontain" class="ui-hide-label">
-		<label for="password2">Password:</label>
-		<input type="password" name="password2" id="password2" value="" placeholder="Re-enter Password"/>
-	</div>
-	<button data-disabled="false" class="ui-btn-hidden" type="submit" data-theme="c" name="submit" value="submit-value">Submit</button>
-  </form>
+<div data-role="header" data-theme="b">
+  <h1>Register</h1>
 </div>
-  <div id="nav" data-role="navbar" data-iconpos="top">
-                    <ul>
-                        <li>
-                            <a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="star" class="ui-btn-active ui-state-persist">
-                                Game
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{url_for('show_score')}}" data-transition="fade" data-theme="b" data-icon="grid">
-                                Scores
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="gear">
-                                Player
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="info">
-                                Info
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+
+<div data-role="content">
+	{% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+	<form action="{{ url_for('register') }}" method="post" data-ajax="false" class="ui-body ui-body-c ui-corner-all">
+		<div data-role="fieldcontain" class="ui-hide-label">
+			<label for="username" class="ui-hidden-accessible">Username:</label>
+			<input type="text" name="username" id="username" value="" data-clear-btn="true" placeholder="Username" />
+		</div>
+		<div data-role="fieldcontain" class="ui-hide-label">
+			<label for="email" class="ui-hidden-accessible">e-Mail:</label>
+			<input type="text" name="email" id="email" value="" data-clear-btn="true" placeholder="E-Mail" />
+		</div>
+		<div data-role="fieldcontain" class="ui-hide-label">
+			<label for="password">Password:</label>
+			<input type="password" name="password" id="password" value="" placeholder="Password"/>
+		</div>
+		<div data-role="fieldcontain" class="ui-hide-label">
+			<label for="password2">Password:</label>
+			<input type="password" name="password2" id="password2" value="" placeholder="Re-enter Password"/>
+		</div>
+		<button data-disabled="false" class="ui-btn-hidden" type="submit" data-theme="c" name="submit" value="submit-value">Submit</button>
+	</form>
+</div>
+<div id="nav" data-role="navbar" data-iconpos="top">
+	<ul>
+		<li><a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="star" class="ui-btn-active ui-state-persist">Game</a></li>
+		<li><a href="{{url_for('show_score')}}" data-transition="fade" data-theme="b" data-icon="grid">Scores</a></li>
+		<li><a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="gear">Player</a></li>
+		<li><a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="info">Info</a></li>
+	</ul>
+</div>
 {% endblock %}

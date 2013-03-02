@@ -5,35 +5,19 @@
 {% endblock %}
 
 {% block body %}
-	<div id="header" data-theme="b" data-role="header">
-		<h1>Map Your City</h1>
-	</div>
+<div id="header" data-theme="b" data-role="header">
+	<h1>Map Your City</h1>
+</div>
 <div id="content" height="100%" data-role="content">
-    <h2>Informationen zum Spiel</h2>
-    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+	<h2>Informationen zum Spiel</h2>
+	Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
-                    <ul>
-                        <li>
-                            <a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="star">
-                                Game
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{url_for('show_score')}}" data-transition="fade" data-theme="b" data-icon="grid">
-                                Scores
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{url_for('show_player')}}" data-transition="fade" data-theme="b" data-icon="gear">
-                                Player
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{url_for('show_info')}}" data-transition="fade" data-theme="b" data-icon="info" class="ui-btn-active ui-state-persist">
-                                Info
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+	<ul>
+		<li><a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="star">Game</a></li>
+		<li><a href="{{url_for('show_score')}}" data-transition="fade" data-theme="b" data-icon="grid">Scores</a></li>
+		<li><a href="{{url_for('show_player')}}" data-transition="fade" data-theme="b" data-icon="gear">Player</a></li>
+		<li><a href="{{url_for('show_info')}}" data-transition="fade" data-theme="b" data-icon="info" class="ui-btn-active ui-state-persist">Info</a></li>
+	</ul>
+</div>
 {% endblock %}
