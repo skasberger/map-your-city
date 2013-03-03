@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
 class Player(db.Model):
-	player_id = db.Column(db.String(25), primary_key=True, unique=True)
+	id = db.Column(db.String(25), primary_key=True, unique=True)
 	username = db.Column(db.String(25), unique=True)
 	email = db.Column(db.String(120), unique=True)
 	pw_hash = db.Column(db.String(160),unique=False)
@@ -33,6 +33,9 @@ class Player(db.Model):
 
 	def set_password(self, password):
 		self.pw_hash = hash_password(password)
+
+	def check_password(self, password):
+		return check_password_hash(self.pw_hash, password)
 
 	def set_color(self, color):
 		self.color = color
@@ -66,35 +69,41 @@ class Player(db.Model):
 		'<Player %r>' % (self.username)
 
 class History_Scores(db.Mode):
-	action_id = db.Column(db.String(25), primary_key=True, unique=True)
+	id = db.Column(db.String(25), primary_key=True, unique=True)
 	score_id = db.Column(db.String(25), unique=False)
 	session_id = db.Column(db.String(25), unique=False)
 	player_id = db.Column(db.String(25), unique=False)
 	timestamp = db.Column(db.Date(), unique=False)
 
-	def __init__(self, action_id, score_id, session_id, player_id):
-		self.action_id = action_id #wie bekomme ich einen serial hier rein mit prefix score_ ?
+	def __init__(self, id, score_id, session_id, player_id):
+		self.id = id #wie bekomme ich einen serial hier rein mit prefix score_ ?
 		self.score_id	= score_id 
 		self.session_id = session_id
 		self.player_id = player_id
 		self.timestamp = datetime.now()
 
+	def __repr__(self):
+		'<History Scores %r>' % (self.action_id)
+
 class History_Badges(db.Mode):
-	action_id = db.Column(db.String(25), primary_key=True, unique=True)
+	id = db.Column(db.String(25), primary_key=True, unique=True)
 	badge_id = db.Column(db.String(25), unique=False)
 	session_id = db.Column(db.String(25), unique=False)
 	player_id = db.Column(db.String(25), unique=False)
 	timestamp = db.Column(db.Date(), unique=False)
 
-	def __init__(self, action_id, badge_id, session_id, player_id):
-		self.action_id = action_id #wie bekomme ich einen serial hier rein mit prefix badge_ ?
+	def __init__(self, id, badge_id, session_id, player_id):
+		self.id = id #wie bekomme ich einen serial hier rein mit prefix badge_ ?
 		self.badge_id	= badge_id 
 		self.session_id = session_id
 		self.player_id = player_id
 		self.timestamp = datetime.now()
 
+	def __repr__(self):
+		'<History Badges %r>' % (self.action_id)
+
 class History_Geoobjects(db.Mode):
-	action_id = db.Column(db.String(25), primary_key=True, unique=True)
+	id = db.Column(db.String(25), primary_key=True, unique=True)
 	session_id = db.Column(db.String(25), unique=False)
 	player_id = db.Column(db.String(25), unique=False)
 	timestamp = db.Column(db.Date(), unique=False)
@@ -104,8 +113,8 @@ class History_Geoobjects(db.Mode):
 	x_geom = db.Column(db.String(25), unique=False)
 	y_geom = db.Column(db.String(25), unique=False)
 
-	def __init__(self, action_id, session_id, player_id, geoobject_type, osm_object_id, osm_object_attr, x_geom, y_geom):
-		self.action_id = action_id #wie bekomme ich einen serial hier rein mit prefix geo_ ?
+	def __init__(self, id, session_id, player_id, geoobject_type, osm_object_id, osm_object_attr, x_geom, y_geom):
+		self.id = id #wie bekomme ich einen serial hier rein mit prefix geo_ ?
 		self.session_id = session_id
 		self.player_id = player_id
 		self.timestamp = datetime.now()
@@ -115,20 +124,26 @@ class History_Geoobjects(db.Mode):
 		self.x_geom = x_geom
 		self.y_geom = y_geom
 
+	def __repr__(self):
+		'<History Geoobjects %r>' % (self.action_id)
+
 class History_Social(db.Mode):
-	action_id = db.Column(db.String(25), primary_key=True, unique=True)
+	id = db.Column(db.String(25), primary_key=True, unique=True)
 	session_id = db.Column(db.String(25), unique=False)
 	player_id = db.Column(db.String(25), unique=False)
 	timestamp = db.Column(db.Date(), unique=False)
 	social_type = db.Column(db.String(50), unique=False)
 
-	def __init__(self, action_id, session_id, player_id, social_type):
-		self.action_id = action_id #wie bekomme ich einen serial hier rein mit prefix social_ ?
+	def __init__(self, id, session_id, player_id, social_type):
+		self.id = id #wie bekomme ich einen serial hier rein mit prefix social_ ?
 		self.session_id = session_id
 		self.player_id = player_id
 		self.timestamp = datetime.now()
 		self.social_type = social_type
 		
+	def __repr__(self):
+		'<History Social %r>' % (self.action_id)
+
 class SP_Game_Info(db.Mode):
 	session_id = db.Column(db.String(25), primary_key=True, unique=True)
 	player_id = db.Column(db.String(25), unique=False)
@@ -149,6 +164,8 @@ class SP_Game_Info(db.Mode):
 	
 	def get_session_status(self, session_id):
 
+	def __repr__(self):
+		'<SP Game Info %r>' % (self.session_id)
 
 class MP_Game_Info(db.Mode):
 	session_id = db.Column(db.String(25), primary_key=True, unique=True)
@@ -168,6 +185,9 @@ class MP_Game_Info(db.Mode):
 
 	def get_session_status(self, session_id):
 
+	def __repr__(self):
+		'<MP Game Info %r>' % (self.session_id)
+
 class MP_Game_Teams(db.Mode):
 	id = db.Column(db.Integer, primary_key=True, unique=True)
 	session_id = db.Column(db.String(25), unique=False)
@@ -180,6 +200,9 @@ class MP_Game_Teams(db.Mode):
 		self.teamname = teamname
 		self.color = color
 
+	def __repr__(self):
+		'<MP Game Teams %r>' % (self.id)
+
 class MP_Game_Team_Players(db.Mode):
 	team_id = db.Column(db.Integer, primary_key=True, unique=False)
 	player_id = db.Column(db.String(25), unique=False)
@@ -189,6 +212,9 @@ class MP_Game_Team_Players(db.Mode):
 		self.team_id = team_id
 		self.player_id = player_id
 		# get completed game
+
+	def __repr__(self):
+		'<MP Game Team Players %r>' % (self.team_id)
 
 class Badges(db.Mode):
 	badge_id = db.Column(db.String(25), primary_key=True, unique=True)
@@ -202,6 +228,9 @@ class Badges(db.Mode):
 		self.name = name
 		self.image = image
 
+	def __repr__(self):
+		'<Badges %r>' % (self.badge_id)
+
 class Scorelist_FFA(db.Mode):
 	score_id = db.Column(db.String(25), primary_key=True, unique=True)
 	name = db.Column(db.String(25), unique=True)
@@ -212,6 +241,9 @@ class Scorelist_FFA(db.Mode):
 		self.name = name
 		self.score = score
 
+	def __repr__(self):
+		'<Scorelist_FFA %r>' % (self.score_id)
+
 class Regions(db.Mode):
 	region_short = db.Column(db.String(25), primary_key=True, unique=True)
 	regionname = db.Column(db.String(120), unique=True)
@@ -221,6 +253,9 @@ class Regions(db.Mode):
 		self.region_short = region_short
 		self.regionname = regionname
 		self.country = country
+
+	def __repr__(self):
+		'<Regions %r>' % (self.region_short)
 
 class Schedule_MOTW(db.Mode):
 	week_id = db.Column(db.String(35), primary_key=True, unique=True)
@@ -236,6 +271,9 @@ class Schedule_MOTW(db.Mode):
 		self.time_end = time_end
 		self.area = area
 
+	def __repr__(self):
+		'<Schedule MOTW %r>' % (self.week_id)
+
 class Ammenities(db.Mode):
 	ammenity = db.Column(db.String(35), primary_key=True, unique=True)
 	long_name = db.Column(db.String(50), unique=True)
@@ -243,4 +281,7 @@ class Ammenities(db.Mode):
 	def __init__(self, ammenity, long_name):
 		self.ammenity = ammenity
 		self.long_name = long_name
+
+	def __repr__(self):
+		'<Ammenities %r>' % (self.ammenity)
 
