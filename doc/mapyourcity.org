@@ -1,25 +1,19 @@
-- login with open street map account => save password not in the database when it is possible to save it on the phone
-- agreggate stats every week for every user and overwrite the history
-- jedeR sollte den OSM account nutzen, wegen History speicherung
+# questions martin
+- zugriff datenbank
+- verwenden von cookies?
+- was ist eine session in flask
+- wie machen wir das mit session_id und session_status?
+- was soll __repr__ retour geben?
+- upload database und url tables?
+- was ist das g objekt
+- nearby method in overpass nutzen?
+- wie grenzen wir graz ein?
+- icons einfärben, welche verifiziert wurden
+- was ist in der flask.cfg drinnen? mit kopieren?
+- jQuery => classes
 
-# avatars
-identicons http://scott.sherrillmix.com/blog/blogger/wp_identicon/
-wavatars http://www.shamusyoung.com/twentysidedtale/?p=1462
-monsterid http://www.splitbrain.org/projects/monsterid
-retro https://retroavatar.appspot.com/
-upload own file => flask function
-
-
-abfrage bei spielabruch, ob es irgend ein problem gegeben hat und auto bug report
-alle 20-30 punkte eine interaktion zw. user und spiel: zB wenn du heute noch 10 pois validierst bekommst du zusatzpunkte
-language support
-layer: special, osm default, orthophotos
-regex für email bei registration
-netidee einreichen
-
-# questions
-- how to save the avatar
-- copyright sourcecode
+# questions michael
+- osm api für eintrag punkte?
 
 * REQUIREMENTS
 Develop a location based game for the Location-based Service Course, which is useful for the Open Street Map community worldwide.
@@ -193,20 +187,47 @@ create own twitter account
 - geoimage service gateway => ask for not restricted access!
 - openstreetmap
 * IMPLEMENTATION
-** 0.1 - Basic FFA & Settings
-# tasks
-- implement FFA for Graz and radius
-- setup basic tables: user, history, sessions_singleplayer
-- implement registration
-- screens: start up, registration, settings, t
+** 0.1 - LV Abgabe
+*** TASKS
+- actual region in game is based on location: no choice, only displaying
+- under which license
+- implement FFA for Graz
+- verify location with geoobject (radius)
+- Highscore List
+- add OSM Login
+- window adaptation to device makes some problems
+- save osm password on the phone or in database (hashed)
+- how to handle disconnect of player during game: stats, reconnect, automated bug regport, message to user
+- make comments
+**** Avatar
+identicons http://scott.sherrillmix.com/blog/blogger/wp_identicon/
+wavatars http://www.shamusyoung.com/twentysidedtale/?p=1462
+monsterid http://www.splitbrain.org/projects/monsterid
+retro https://retroavatar.appspot.com/
 
 *** SUMMARY
 *** DOCUMENTATION
 - use overpass API to get data
 - use OpenStreetMap API to write data
 - use OGD Graz Orthophotos
+- badges contribute to score
+- name icons after ammenity names
 **** CONFIGURATION
 *** LATER
+- lost password
+- give the community an easy chance to organize the game modi, like add Mapper of the Week quest for a specific time
+- change password and username: email confirmation?
+- allow it to look inside the app without login on some pages like stats and about us
+- multilanguage support
+- bug reporting: where and how?
+- collect data about usage of app: aggregated
+- every few points an interaction between user and game, like: if you verify 10 other points today, you get extrascore/badge
+- look for custom osm rendering: cloudmade
+- language support
+- regex email adress for logins
+- participate in netidee 2013
+- import images for avatars
+- agreggate stats every week for every user and overwrite the history
 - objects in lower data density areas count more
 - use gravatar for avatar https://de.gravatar.com/
 - publish accumulated user data for free
@@ -214,36 +235,14 @@ create own twitter account
 - add region specific points and quests: uhrturm, murinsel, etc
 - add gimicks and fun related stuff to quests: let this be made by the community
 - Stats, Website, Multiplayer, Design, Badges
-** 0.2
-# tasks
 - badge for most points in graz (mapper of the city
 - badge for 1000 points
 - badge for 100 played hours
 - badge for most points in a year in graz
 - badge for most points in graz
 - badge for most points in graz
-
-*** SUMMARY
-*** DOCUMENTATION
-**** CONFIGURATION
-*** LATER
-** 0.3
-# tasks
-
-*** SUMMARY
-*** DOCUMENTATION
-**** CONFIGURATION
-*** LATER
-** 0.x - TEMPLATE
-# tasks
-
-*** SUMMARY
-*** DOCUMENTATION
-**** CONFIGURATION
-*** LATER
-
-
-# pois
+- badge for social activities: twitter, bug report, facebook, etc.
+**** AMMENITIES
 - diet:vegan
 - diet:vegetarian => es gibt noch mehrere
 - smoking
@@ -260,9 +259,49 @@ create own twitter account
 - amenity=postal_office
 - amenity=mailbox
 
+** 0.2
+*** TASKS
+*** SUMMARY
+*** DOCUMENTATION
+**** CONFIGURATION
+*** LATER
+
+** 0.3
+*** TASKS
+*** SUMMARY
+*** DOCUMENTATION
+**** CONFIGURATION
+*** LATER
+
+** 0.4
+*** TASKS
+*** SUMMARY
+*** DOCUMENTATION
+**** CONFIGURATION
+*** LATER
+
+** 0.5
+*** TASKS
+*** SUMMARY
+*** DOCUMENTATION
+**** CONFIGURATION
+*** LATER
 
 * DOCUMENTATION
-Virutal Environment starten: 
-https://openshift.redhat.com/community/blogs/how-to-install-and-configure-a-python-flask-dev-environment-deploy-to-openshift
+** ACTIVATE VIRTUAL ENVIRONMNENT
+Virtual Environment starten [https://openshift.redhat.com/community/blogs/how-to-install-and-configure-a-python-flask-dev-environment-deploy-to-openshift]
+
 . venv/bin/activate
 python runserver.py
+
+** CREATE DATABASE
+in python shell
+
+from mapyourcity import db
+db.create_all()
+
+** RUN SERVER
+in shell
+
+python runserver.py
+
