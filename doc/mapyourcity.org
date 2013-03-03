@@ -1,16 +1,3 @@
-# questions martin
-- zugriff datenbank
-- verwenden von cookies?
-- was ist eine session in flask
-- wie machen wir das mit session_id und session_status?
-- was soll __repr__ retour geben?
-- upload database und url tables?
-- was ist das g objekt
-- nearby method in overpass nutzen?
-- wie grenzen wir graz ein?
-- icons einfärben, welche verifiziert wurden
-- was ist in der flask.cfg drinnen? mit kopieren?
-- jQuery => classes
 
 # questions michael
 - osm api für eintrag punkte?
@@ -214,6 +201,8 @@ retro https://retroavatar.appspot.com/
 - name icons after ammenity names
 **** CONFIGURATION
 *** LATER
+- check nearby method from overpass api
+- check if own location is inside an region
 - lost password
 - give the community an easy chance to organize the game modi, like add Mapper of the Week quest for a specific time
 - change password and username: email confirmation?

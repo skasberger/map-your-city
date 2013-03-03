@@ -26,10 +26,10 @@
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
 	<ul>
-		<li><a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="star">Game</a></li>
-		<li><a href="{{url_for('show_score')}}" data-transition="fade" data-theme="b" data-icon="grid">Scores</a></li>
-		<li><a href="{{url_for('show_player')}}" data-transition="fade" data-theme="b" data-icon="gear">Player</a></li>
-		<li><a href="{{url_for('show_info')}}" data-transition="fade" data-theme="b" data-icon="info">Info</a></li>
+		<li><a href="{{url_for('main')}}" data-transition="fade" data-theme="b" data-icon="star" class="ui-btn-active ui-state-persist">Menu</a></li>
+		<li><a href="{{url_for('score')}}" data-transition="fade" data-theme="b" data-icon="grid">Scores</a></li>
+		<li><a href="{{url_for('player_settings')}}" data-transition="fade" data-theme="b" data-icon="gear">Player</a></li>
+		<li><a href="{{url_for('about')}}" data-transition="fade" data-theme="b" data-icon="info">About</a></li>
 	</ul>
 </div>
 {% endblock %}

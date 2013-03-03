@@ -2,40 +2,45 @@ from mapyourcity import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
-class Player(db.Model):
-	id = db.Column(db.String(25), primary_key=True, unique=True)
+# COMMENTS
+class SettingsPlayer(db.Model):
+	id = db.Column(db.Integer, primary_key=True, unique=True)
 	username = db.Column(db.String(25), unique=True)
 	email = db.Column(db.String(120), unique=True)
-	pw_hash = db.Column(db.String(160),unique=False)
-	created_at = db.Column(db.Date(), unique=False)
-	last_login = db.Column(db.Date(), unique=False)
-	language = db.Column(db.String(10), unique=False)
-	avatar = db.Column(db.String(30), unique=False)
-	color = db.Column(db.String(10), unique=False)
-	region = db.Column(db.String(80), unique=False)
-	country = db.Column(db.String(80), unique=False)
+	pw_hash = db.Column(db.String(160))
+	created_at = db.Column(db.Date())
+	last_login = db.Column(db.Date())
+	language = db.Column(db.String(10))
+	avatar = db.Column(db.String(30))
+	color = db.Column(db.String(10))
+	region = db.Column(db.String(80))
+	country = db.Column(db.String(80))
 	osm_login = db.Column(db.String(50), unique=True)
-	osm_hash = db.Column(db.String(160), unique=False)
+	osm_hash = db.Column(db.String(160))
 	
 	def __init__(self, username, email, password):
+		self.id = 1
 		self.username = username
 		self.email = email
-		self.pw_hash = hash_password(password)
+		self.pw_hash = self.get_hash(password)
 		self.created_at = datetime.now()
-		self.avatar = set_avatar()
-		self.color = set_color()
-		self.region = set_region()
-		self.language = set_language()
-		self.country = get_country(region)
+		self.last_login = datetime.now()
+		self.avatar = 'default'
+		self.color = 'ffffff'
+		self.region = 'graz'
+		self.language = 'de'
+		self.country = 'at'
+		self.osm_login = 'openstreetmap'
+		self.osm_hash = self.get_hash('hello')
  
-	def hash_password(self, password):
-		return generate_password_hash(self)
-
-	def set_password(self, password):
-		self.pw_hash = hash_password(password)
+	def get_hash(self, password):
+		return generate_password_hash(password)
 
 	def check_password(self, password):
 		return check_password_hash(self.pw_hash, password)
+
+	def set_avatar(self, avatar='default'):
+		self.avatar = avatar
 
 	def set_color(self, color):
 		self.color = color
@@ -44,7 +49,7 @@ class Player(db.Model):
 		self.region = region 
 
 	def get_country(self, region):
-		self.country = Regions.query.filter_by(regionname = region).first()
+		self.country = SettingsRegions.query.filter_by(regionname = region).first()
 	
 	def connect_osm(self, login, password):
 		self.osm_login = login
@@ -53,9 +58,6 @@ class Player(db.Model):
 	def set_language(self, language):
 		self.language = language
 	
-	def set_avatar(self, avatar):
-		self.avatar = avatar
-
 	def set_username(self, username):
 		self.username = username
 
@@ -68,16 +70,16 @@ class Player(db.Model):
 	def __repr__(self):
 		'<Player %r>' % (self.username)
 
-class History_Scores(db.Mode):
+class HistoryScores(db.Model):
 	id = db.Column(db.String(25), primary_key=True, unique=True)
-	score_id = db.Column(db.String(25), unique=False)
-	session_id = db.Column(db.String(25), unique=False)
-	player_id = db.Column(db.String(25), unique=False)
-	timestamp = db.Column(db.Date(), unique=False)
+	score_id = db.Column(db.String(25))
+	session_id = db.Column(db.String(25))
+	player_id = db.Column(db.String(25))
+	timestamp = db.Column(db.Date())
 
 	def __init__(self, id, score_id, session_id, player_id):
 		self.id = id #wie bekomme ich einen serial hier rein mit prefix score_ ?
-		self.score_id	= score_id 
+		self.score_id = score_id 
 		self.session_id = session_id
 		self.player_id = player_id
 		self.timestamp = datetime.now()
@@ -85,16 +87,17 @@ class History_Scores(db.Mode):
 	def __repr__(self):
 		'<History Scores %r>' % (self.action_id)
 
-class History_Badges(db.Mode):
+# COMMENTS
+class HistoryBadges(db.Model):
 	id = db.Column(db.String(25), primary_key=True, unique=True)
-	badge_id = db.Column(db.String(25), unique=False)
-	session_id = db.Column(db.String(25), unique=False)
-	player_id = db.Column(db.String(25), unique=False)
-	timestamp = db.Column(db.Date(), unique=False)
+	badge_id = db.Column(db.String(25))
+	session_id = db.Column(db.String(25))
+	player_id = db.Column(db.String(25))
+	timestamp = db.Column(db.Date())
 
 	def __init__(self, id, badge_id, session_id, player_id):
 		self.id = id #wie bekomme ich einen serial hier rein mit prefix badge_ ?
-		self.badge_id	= badge_id 
+		self.badge_id = badge_id 
 		self.session_id = session_id
 		self.player_id = player_id
 		self.timestamp = datetime.now()
@@ -102,16 +105,17 @@ class History_Badges(db.Mode):
 	def __repr__(self):
 		'<History Badges %r>' % (self.action_id)
 
-class History_Geoobjects(db.Mode):
+# COMMENTS
+class HistoryGeo(db.Model):
 	id = db.Column(db.String(25), primary_key=True, unique=True)
-	session_id = db.Column(db.String(25), unique=False)
-	player_id = db.Column(db.String(25), unique=False)
-	timestamp = db.Column(db.Date(), unique=False)
-	osm_object_id = db.Column(db.String(25), unique=False)
-	geoobject_type = db.Column(db.String(50), unique=False)
-	osm_object_attr = db.Column(db.String(150), unique=False)
-	x_geom = db.Column(db.String(25), unique=False)
-	y_geom = db.Column(db.String(25), unique=False)
+	session_id = db.Column(db.String(25))
+	player_id = db.Column(db.String(25))
+	timestamp = db.Column(db.Date())
+	osm_object_id = db.Column(db.String(25))
+	geoobject_type = db.Column(db.String(50))
+	osm_object_attr = db.Column(db.String(150))
+	x_geom = db.Column(db.String(25))
+	y_geom = db.Column(db.String(25))
 
 	def __init__(self, id, session_id, player_id, geoobject_type, osm_object_id, osm_object_attr, x_geom, y_geom):
 		self.id = id #wie bekomme ich einen serial hier rein mit prefix geo_ ?
@@ -127,12 +131,13 @@ class History_Geoobjects(db.Mode):
 	def __repr__(self):
 		'<History Geoobjects %r>' % (self.action_id)
 
-class History_Social(db.Mode):
+# COMMENTS
+class HistorySocial(db.Model):
 	id = db.Column(db.String(25), primary_key=True, unique=True)
-	session_id = db.Column(db.String(25), unique=False)
-	player_id = db.Column(db.String(25), unique=False)
-	timestamp = db.Column(db.Date(), unique=False)
-	social_type = db.Column(db.String(50), unique=False)
+	session_id = db.Column(db.String(25))
+	player_id = db.Column(db.String(25))
+	timestamp = db.Column(db.Date())
+	social_type = db.Column(db.String(50))
 
 	def __init__(self, id, session_id, player_id, social_type):
 		self.id = id #wie bekomme ich einen serial hier rein mit prefix social_ ?
@@ -144,14 +149,15 @@ class History_Social(db.Mode):
 	def __repr__(self):
 		'<History Social %r>' % (self.action_id)
 
-class SP_Game_Info(db.Mode):
+# COMMENTS
+class GameSp(db.Model):
 	session_id = db.Column(db.String(25), primary_key=True, unique=True)
-	player_id = db.Column(db.String(25), unique=False)
-	region = db.Column(db.String(25), unique=False)
-	game_type = db.Column(db.String(25), unique=False)
-	session_start = db.Column(db.Date(), unique=False)
-	session_end = db.Column(db.Date(), unique=False)
-	session_status = db.Column(db.String(20), unique=False)
+	player_id = db.Column(db.String(25))
+	region = db.Column(db.String(25))
+	game_type = db.Column(db.String(25))
+	session_start = db.Column(db.Date())
+	session_end = db.Column(db.Date())
+	session_status = db.Column(db.String(20))
 
 	def __init__(self, session_id, player_id, region, game_type, session_start, session_end):
 		self.session_id = session_id
@@ -162,18 +168,19 @@ class SP_Game_Info(db.Mode):
 		self.session_end = session_end
 		self.session_status = get_session_status(session_id)
 	
-	def get_session_status(self, session_id):
+	# def get_session_status(self, session_id):
 
 	def __repr__(self):
 		'<SP Game Info %r>' % (self.session_id)
 
-class MP_Game_Info(db.Mode):
+# COMMENTS
+class GameMp(db.Model):
 	session_id = db.Column(db.String(25), primary_key=True, unique=True)
-	region = db.Column(db.String(25), unique=False)
-	game_type = db.Column(db.String(25), unique=False)
-	session_start = db.Column(db.Date(), unique=False)
-	session_end = db.Column(db.Date(), unique=False)
-	session_status = db.Column(db.String(20), unique=False)
+	region = db.Column(db.String(25))
+	game_type = db.Column(db.String(25))
+	session_start = db.Column(db.Date())
+	session_end = db.Column(db.Date())
+	session_status = db.Column(db.String(20))
 
 	def __init__(self, session_id, region, game_type, session_start, session_end):
 		self.session_id = session_id
@@ -183,16 +190,17 @@ class MP_Game_Info(db.Mode):
 		self.session_end = session_end
 		self.session_status = get_session_status(session_id)
 
-	def get_session_status(self, session_id):
+	# def get_session_status(self, session_id):
 
 	def __repr__(self):
 		'<MP Game Info %r>' % (self.session_id)
 
-class MP_Game_Teams(db.Mode):
+# COMMENTS
+class GameMpTeams(db.Model):
 	id = db.Column(db.Integer, primary_key=True, unique=True)
-	session_id = db.Column(db.String(25), unique=False)
-	teamname = db.Column(db.String(25), unique=False)
-	color = db.Column(db.String(25), unique=False)
+	session_id = db.Column(db.String(25))
+	teamname = db.Column(db.String(25))
+	color = db.Column(db.String(25))
 	
 	def __init__(self, session_id, teamname, color):
 		# self.id = => serial!
@@ -203,10 +211,11 @@ class MP_Game_Teams(db.Mode):
 	def __repr__(self):
 		'<MP Game Teams %r>' % (self.id)
 
-class MP_Game_Team_Players(db.Mode):
+# COMMENTS
+class GameMpTeamsPlayers(db.Model):
 	team_id = db.Column(db.Integer, primary_key=True, unique=False)
-	player_id = db.Column(db.String(25), unique=False)
-	completed_game = db.Column(db.String(25), unique=False)
+	player_id = db.Column(db.String(25))
+	completed_game = db.Column(db.String(25))
 	
 	def __init__(self, team_id, player_id):
 		self.team_id = team_id
@@ -216,9 +225,10 @@ class MP_Game_Team_Players(db.Mode):
 	def __repr__(self):
 		'<MP Game Team Players %r>' % (self.team_id)
 
-class Badges(db.Mode):
+# COMMENTS
+class SettingsBadges(db.Model):
 	badge_id = db.Column(db.String(25), primary_key=True, unique=True)
-	score = db.Column(db.String(25), unique=False)
+	score = db.Column(db.String(25))
 	name = db.Column(db.String(25), unique=True)
 	image = db.Column(db.String(25), unique=True)
 	
@@ -231,10 +241,11 @@ class Badges(db.Mode):
 	def __repr__(self):
 		'<Badges %r>' % (self.badge_id)
 
-class Scorelist_FFA(db.Mode):
+# COMMENTS
+class SettingsScoresFfa(db.Model):
 	score_id = db.Column(db.String(25), primary_key=True, unique=True)
 	name = db.Column(db.String(25), unique=True)
-	score = db.Column(db.Integer, unique=False)
+	score = db.Column(db.Integer)
 	
 	def __init__(self, score_id, name, score):
 		self.score_id = score_id
@@ -244,10 +255,11 @@ class Scorelist_FFA(db.Mode):
 	def __repr__(self):
 		'<Scorelist_FFA %r>' % (self.score_id)
 
-class Regions(db.Mode):
+# COMMENTS
+class SettingsRegions(db.Model):
 	region_short = db.Column(db.String(25), primary_key=True, unique=True)
 	regionname = db.Column(db.String(120), unique=True)
-	country = db.Column(db.Integer, unique=False)
+	country = db.Column(db.Integer)
 
 	def __init__(self, regionname, region_short, country):
 		self.region_short = region_short
@@ -257,12 +269,13 @@ class Regions(db.Mode):
 	def __repr__(self):
 		'<Regions %r>' % (self.region_short)
 
-class Schedule_MOTW(db.Mode):
+# COMMENTS
+class ScheduleSpMotw(db.Model):
 	week_id = db.Column(db.String(35), primary_key=True, unique=True)
-	ammenity = db.Column(db.String(25), unique=False)
-	time_start = db.Column(db.Date(), unique=False)
-	time_end = db.Column(db.Date(), unique=False)
-	area = db.Column(db.String(25), unique=False)
+	ammenity = db.Column(db.String(25))
+	time_start = db.Column(db.Date())
+	time_end = db.Column(db.Date())
+	area = db.Column(db.String(25))
 	
 	def __init__(self, ammenity, time_start, time_end, area):
 		#self. week_id  => serial!
@@ -274,7 +287,8 @@ class Schedule_MOTW(db.Mode):
 	def __repr__(self):
 		'<Schedule MOTW %r>' % (self.week_id)
 
-class Ammenities(db.Mode):
+# COMMENTS
+class SettingsAmmenities(db.Model):
 	ammenity = db.Column(db.String(35), primary_key=True, unique=True)
 	long_name = db.Column(db.String(50), unique=True)
 	
