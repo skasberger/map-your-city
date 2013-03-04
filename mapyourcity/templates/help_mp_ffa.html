@@ -1,0 +1,36 @@
+{% extends "layout_main.html" %}
+
+{% block title_tag %}
+	Game
+{% endblock %}
+
+{% block body %}
+<div id="header" data-theme="b" data-role="header">
+	<h1>About</h1>
+</div>
+<div id="content" height="100%" data-role="content">
+	<h2>Data Sources</h2>
+	<ul>
+		<li><a href="http://data.graz.gv.at/" title="Openstreetmap">Openstreetmap</a></li>
+		<li><a href="http://data.graz.gv.at/" title="Open Government Data Stadt Graz">Open Government Data Stadt Graz</a></li>
+	</ul>
+	<h2>Source Code</h2>
+	All sourcecode of the APP is available on <a href="https://github.com/skasberger/map-your-city" title="GitHub Repository">GitHub</a> under a free license.
+	<h2>Contact</h2>
+	<ul>
+		<li>Email: mapyourcity@stefankasberger.at</li>
+		<li>Twitter: <a href="https://twitter.com/MapYourCityAPP" title="@mapyourcity Twitter">@mapyourcity</a></li>
+	</ul>
+	<h2>Developer</h2>
+	<ul>
+		<li>Stefan Kasberger (<a href="https://www.twitter.com/stefankasberger" title="@stefankasberger Twitter">@stefankasberger</a>)</li>
+		<li>Martin Hochenwarter</li>
+	</ul>
+</div>
+<div id="nav" data-role="navbar" data-iconpos="top">
+	<ul>
+		<li><a href="{{url_for('main')}}" data-transition="fade" data-theme="b" data-icon="star" class="ui-btn-active ui-state-persist">Menu</a></li>
+		<li><a href="{{url_for('help')}}" data-transition="fade" data-theme="b" data-icon="grid">Help</a></li>
+	</ul>
+</div>
+{% endblock %}

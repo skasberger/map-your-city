@@ -1,6 +1,6 @@
 {% extends "layout_main.html" %}
 
-{% block meta_title %}
+{% block title %}
 	Login
 {% endblock %}
 
@@ -20,16 +20,14 @@
 			<label for="password">Password:</label>
 			<input type="password" name="password" id="password" value="" placeholder="Password"/>
 		</div>
-	<button data-disabled="false" class="ui-btn-hidden" type="submit" data-theme="c" name="submit" value="submit-value">Submit</button>
+	<button data-disabled="false" class="ui-btn-hidden" type="submit" data-theme="c" name="submit" value="submit-value">Login</button>
 </form>
 <a href="{{ url_for('register') }}" data-role="button">Register</a>
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
 	<ul>
-		<li><a href="{{url_for('main')}}" data-transition="fade" data-theme="b" data-icon="star" class="ui-btn-active ui-state-persist">Menu</a></li>
-		<li><a href="{{url_for('score')}}" data-transition="fade" data-theme="b" data-icon="grid">Scores</a></li>
-		<li><a href="{{url_for('player_settings')}}" data-transition="fade" data-theme="b" data-icon="gear">Player</a></li>
 		<li><a href="{{url_for('about')}}" data-transition="fade" data-theme="b" data-icon="info">About</a></li>
+		<li><a href="{{url_for('help')}}" data-transition="fade" data-theme="b" data-icon="info">Help</a></li>
 	</ul>
 </div>
 {% endblock %}

@@ -1,0 +1,38 @@
+{% extends "layout_main.html" %}
+
+{% block title %}
+	Game
+{% endblock %}
+
+{% block body %}
+<div id="header" data-theme="b" data-role="header">
+	<h1>Help</h1>
+</div>
+<div id="content" data-role="content">  
+	<h2>FAQ</h2>
+	<h2>Gamemodi</h2>
+	<h3>Singleplayer</h3>
+	<ul>
+		<li><a href="{{url_for('help_sp_ffa')}}">Free For All</a></li>
+	</ul>
+	
+	<h3>Multiplayer</h3>
+	<ul>
+		<li><a href="{{url_for('help_mp_ffa')}}">Free For All</a></li>
+	</ul>
+	<h2>Bug Reporting</h2>
+	<p>Email: mapyourcity@stefankasberger.at</p>
+	<h2>Openstreetmap</h2>
+	<ul>
+		<li>Mailinglists</li>
+		<li>Wiki</li>
+	</ul>
+</div>
+<div id="nav" data-role="navbar" data-iconpos="top">
+	<ul>
+		<li><a href="{{url_for('main')}}" data-transition="fade" data-theme="b" data-icon="home" class="ui-btn-active ui-state-persist">Menu</a></li>
+	</ul>
+</div>
+{% endblock %}
+
+

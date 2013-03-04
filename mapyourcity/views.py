@@ -1,5 +1,5 @@
 from mapyourcity import app, db
-from mapyourcity.models import SettingsPlayer, HistoryGeo
+from mapyourcity.models import SettingsPlayer, HistoryOsm
 from flask import Flask, request, session, g, jsonify, redirect, url_for, abort, render_template, flash
 
 # COMMENTS
@@ -14,8 +14,7 @@ def before_request():
 def main():
   if not g.player:
     return redirect(url_for('login'))
-  else:
-    return render_template('game.html')
+  return render_template('main.html')
 
 # COMMENTS
 @app.route('/login', methods=['GET', 'POST'])
@@ -64,93 +63,105 @@ def logout():
   g.player = None
   return redirect(url_for('login'))
 
+
 # COMMENTS
-@app.route('/verify')
-def verify():
+@app.route('/verify-osm')
+def verifyOsm():
   if not g.player:
     return redirect(url_for('login'))
-  osmid=  request.args.get('ObjectOSMID', 0, type=int)
+  object_id=  request.args.get('ObjectId', 0, type=int)
   name = request.args.get('ObjectName', '', type=str)
-  attribute = request.args.get('ObjectAttribute', '', type=str)
-  geoObject = HistoryGeo(osmid, name, attribute, g.player.id)
+  ammenity = request.args.get('ObjectType', '', type=str)
+  attribute = request.args.get('ObjectAttr', '', type=str)
+  geoObject = HistoryOsm(session, g.player.id, object_id, name, ammenity, attribute)
   db.session.add(geoObject)
-  g.player.points=g.player.points+1
+  g.player.score=g.player.score+1
   db.session.commit()
-  return jsonify(result=g.player.points)
+  return jsonify(result=g.player.score)
 
 # COMMENTS
 @app.route('/player')
-
-# COMMENTS
-@app.route('/player/<playerid>')
-
-# COMMENTS
-@app.route('/player/<playerid>/settings')
-
-# COMMENTS
-@app.route('/player/<playerid>/settings/osm')
-
-# COMMENTS
-@app.route('/player/<playerid>/map-of-fame')
-
-# COMMENTS
-@app.route('/player/<playerid>/score')
-
-# COMMENTS
-@app.route('/player/<playerid>/stats')
-
-# COMMENTS
-@app.route('/<playerid>/settings')
-def player_settings():
+def player():
   if not g.player:
     return redirect(url_for('login'))
-  return render_template('scores.html')
+  return render_template('player.html')
 
 # COMMENTS
-@app.route('/sp')
+# @app.route('/player/<playerid>')
+
+# COMMENTS
+# @app.route('/player/<playerid>/settings')
+
+# COMMENTS
+# @app.route('/player/<playerid>/settings/osm')
+
+# COMMENTS
+# @app.route('/player/<playerid>/map-of-fame')
+
+# COMMENTS
+# @app.route('/player/<playerid>/score')
+
+# COMMENTS
+# @app.route('/player/<playerid>/stats')
+
+# COMMENTS
+#@app.route('/<playerid>/settings')
+#def playerSettings():
+#  if not g.player:
+#    return redirect(url_for('login'))
+#  return render_template('game.html')
+
+#@app.route('/player/settings')
+#def playerSettings():
+#  if not g.player:
+#    return redirect(url_for('login'))
+#  return render_template('game.html')
+
 
 # COMMENTS
 @app.route('/sp/ffa')
+def sp_ffa():
+  if not g.player:
+    return redirect(url_for('login'))
+  return render_template('game_sp_ffa.html')
 
 # COMMENTS
-@app.route('/sp/ffa/help')
+@app.route('/mp/ffa')
+def mp_ffa():
+  if not g.player:
+    return redirect(url_for('login'))
+  return render_template('game_mp_ffa.html')
 
 # COMMENTS
-@app.route('/sp/motw')
-
-# COMMENTS
-@app.route('/mp')
-
-# COMMENTS
-@app.route('/score')
-def score():
+@app.route('/scores')
+def scores():
   if not g.player:
     return redirect(url_for('login'))
   return render_template('scores.html')
 
 # COMMENTS
-@app.route('/score/<playerid>')
-def scorePlayer():
-  if not g.player:
-    return redirect(url_for('login'))
-  return render_template('scores.html')
+# @app.route('/score/<playerid>')
+# def scorePlayer():
+#   if not g.player:
+#     return redirect(url_for('login'))
+#  return render_template('score.html')
 
 # COMMENTS
-@app.route('/score/<region>')
-def scoreRegion():
-  if not g.player:
-    return redirect(url_for('login'))
-  return render_template('scores.html')
+#@app.route('/score/<region>')
+#def scoreRegion():
+  #if not g.player:
+#    return redirect(url_for('login'))
+  #return render_template('score.html')
 
 # COMMENTS
-@app.route('/score/<country>')
-def scoreCountry():
-  if not g.player:
-    return redirect(url_for('login'))
-  return render_template('scores.html')
+#@app.route('/score/<country>')
+#def scoreCountry():
+#  if not g.player:
+#    return redirect(url_for('login'))
+#  return render_template('score.html')
 
 # COMMENTS
-@app.route('/score/world')
+@app.route('/scores/world')
 def scoreWorld():
   if not g.player:
     return redirect(url_for('login'))
@@ -161,47 +172,68 @@ def scoreWorld():
 def about():
   if not g.player:
     return redirect(url_for('login'))
-  return render_template('info.html')
+  return render_template('about.html')
 
 # COMMENTS
-@app.route('/about/terms-of-use')
-def aboutTou():
-  if not g.player:
-    return redirect(url_for('login'))
-  return render_template('info.html')
+#@app.route('/about/terms-of-use')
+#def aboutTou():
+#  if not g.player:
+#    return redirect(url_for('login'))
+#  return render_template('about.html')
 
 # COMMENTS
-@app.route('/about/code')
-def aboutCode():
-  if not g.player:
-    return redirect(url_for('login'))
-  return render_template('info.html')
+#@app.route('/about/code')
+#def aboutCode():
+#  if not g.player:
+#    return redirect(url_for('login'))
+#  return render_template('about.html')
 
 # COMMENTS
-@app.route('/about/gamemodi')
-def aboutGamemodi():
-  if not g.player:
-    return redirect(url_for('login'))
-  return render_template('info.html')
+#@app.route('/about/gamemodi')
+#def aboutGamemodi():
+#  if not g.player:
+#    return redirect(url_for('login'))
+#  return render_template('help.html')
 
 # COMMENTS
-@app.route('/about/gamemodi/sp_motw')
-def aboutGamemodiSpMotw():
-  if not g.player:
-    return redirect(url_for('login'))
-  return render_template('info.html')
+#@app.route('/about/gamemodi/sp_motw')
+#def aboutGamemodiSpMotw():
+#  if not g.player:
+#    return redirect(url_for('login'))
+#  return render_template('help.html')
 
 # COMMENTS
-@app.route('/about/gamemodi/sp_ffa')
-def aboutGamemodiSpFfa():
-  if not g.player:
-    return redirect(url_for('login'))
-  return render_template('info.html')
+#@app.route('/about/gamemodi/sp_ffa')
+#def aboutGamemodiSpFfa():
+#  if not g.player:
+#    return redirect(url_for('login'))
+#  return render_template('help.html')
 
 # COMMENTS
-@app.route('/about/data-protection')
-def aboutDataProtection():
+#@app.route('/about/data-protection')
+#def aboutDataProtection():
+#  if not g.player:
+#    return redirect(url_for('login'))
+#  return render_template('about.html')
+
+# COMMENTS
+@app.route('/help')
+def help():
   if not g.player:
     return redirect(url_for('login'))
-  return render_template('info.html')
+  return render_template('help.html')
+
+# COMMENTS
+@app.route('/help/sp/ffa')
+def help_sp_ffa():
+  if not g.player:
+    return redirect(url_for('login'))
+  return render_template('help_sp_ffa.html')
+
+# COMMENTS
+@app.route('/help/mp/ffa')
+def help_mp_ffa():
+  if not g.player:
+    return redirect(url_for('login'))
+  return render_template('help_mp_ffa.html')
 

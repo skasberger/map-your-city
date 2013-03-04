@@ -1,0 +1,19 @@
+{% extends "layout_main.html" %}
+
+{% block title %}
+	Game
+{% endblock %}
+
+{% block body %}
+<div id="header" data-theme="b" data-role="header">
+	<h1>Help Singleplayer - Free For All</h1>
+</div>
+<div id="content" height="100%" data-role="content">
+</div>
+<div id="nav" data-role="navbar" data-iconpos="top">
+	<ul>
+		<li><a href="{{url_for('main')}}" data-transition="fade" data-theme="b" data-icon="home" class="ui-btn-active ui-state-persist">Menu</a></li>
+		<li><a href="{{url_for('help')}}" data-transition="fade" data-theme="b" data-icon="grid">Help</a></li>
+	</ul>
+</div>
+{% endblock %}

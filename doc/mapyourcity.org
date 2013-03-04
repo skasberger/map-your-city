@@ -1,7 +1,4 @@
 
-# questions michael
-- osm api für eintrag punkte?
-
 * REQUIREMENTS
 Develop a location based game for the Location-based Service Course, which is useful for the Open Street Map community worldwide.
 Purpose is, to validate different geoobject categories and their attributes
@@ -176,10 +173,13 @@ create own twitter account
 * IMPLEMENTATION
 ** 0.1 - LV Abgabe
 *** TASKS
+- add orthophotos layer from graz
 - actual region in game is based on location: no choice, only displaying
+- tables befüllen: SettingsScoresFFA, SettingsRegions, SettingsBadges, ScheduleSpMotw
 - under which license
 - implement FFA for Graz
 - verify location with geoobject (radius)
+. eingabe ammenity in verification als dropbdown machen
 - Highscore List
 - add OSM Login
 - window adaptation to device makes some problems

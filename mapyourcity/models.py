@@ -7,6 +7,7 @@ class SettingsPlayer(db.Model):
 	id = db.Column(db.Integer, primary_key=True, unique=True)
 	username = db.Column(db.String(25), unique=True)
 	email = db.Column(db.String(120), unique=True)
+	description = db.Column(db.String(250))
 	pw_hash = db.Column(db.String(160))
 	created_at = db.Column(db.Date())
 	last_login = db.Column(db.Date())
@@ -17,22 +18,18 @@ class SettingsPlayer(db.Model):
 	country = db.Column(db.String(80))
 	osm_login = db.Column(db.String(50), unique=True)
 	osm_hash = db.Column(db.String(160))
+	score = db.Column(db.Integer)
+	# theme = db-Column(db.String(5))
 	
 	def __init__(self, username, email, password):
-		self.id = 1
 		self.username = username
 		self.email = email
 		self.pw_hash = self.get_hash(password)
 		self.created_at = datetime.now()
 		self.last_login = datetime.now()
-		self.avatar = 'default'
-		self.color = 'ffffff'
-		self.region = 'graz'
-		self.language = 'de'
-		self.country = 'at'
-		self.osm_login = 'openstreetmap'
-		self.osm_hash = self.get_hash('hello')
- 
+		self.score = 0
+		# self.theme = 'b'
+
 	def get_hash(self, password):
 		return generate_password_hash(password)
 
@@ -41,6 +38,9 @@ class SettingsPlayer(db.Model):
 
 	def set_avatar(self, avatar='default'):
 		self.avatar = avatar
+
+	def set_description(self, description):
+		self.description = description
 
 	def set_color(self, color):
 		self.color = color
@@ -70,22 +70,31 @@ class SettingsPlayer(db.Model):
 	def __repr__(self):
 		'<Player %r>' % (self.username)
 
-class HistoryScores(db.Model):
+# COMMENTS
+class HistoryOsm(db.Model):
 	id = db.Column(db.String(25), primary_key=True, unique=True)
-	score_id = db.Column(db.String(25))
+	score = db.Column(db.Integer)
 	session_id = db.Column(db.String(25))
 	player_id = db.Column(db.String(25))
 	timestamp = db.Column(db.Date())
+	object_id = db.Column(db.String(25))
+	name = db.Column(db.String(150))
+	ammenity = db.Column(db.String(50))
+	attribute = db.Column(db.String(150))
+	x_geom = db.Column(db.String(25))
+	y_geom = db.Column(db.String(25))
 
-	def __init__(self, id, score_id, session_id, player_id):
-		self.id = id #wie bekomme ich einen serial hier rein mit prefix score_ ?
-		self.score_id = score_id 
+	def __init__(self, session_id, player_id, object_id, name, ammenity, attribute):
 		self.session_id = session_id
 		self.player_id = player_id
 		self.timestamp = datetime.now()
+		self.object_id = object_id
+		self.name = name
+		self.ammenity = ammenity
+		self.attribute = attribute
 
 	def __repr__(self):
-		'<History Scores %r>' % (self.action_id)
+		'<History Geoobjects %r>' % (self.action_id)
 
 # COMMENTS
 class HistoryBadges(db.Model):
@@ -96,7 +105,6 @@ class HistoryBadges(db.Model):
 	timestamp = db.Column(db.Date())
 
 	def __init__(self, id, badge_id, session_id, player_id):
-		self.id = id #wie bekomme ich einen serial hier rein mit prefix badge_ ?
 		self.badge_id = badge_id 
 		self.session_id = session_id
 		self.player_id = player_id
@@ -104,32 +112,6 @@ class HistoryBadges(db.Model):
 
 	def __repr__(self):
 		'<History Badges %r>' % (self.action_id)
-
-# COMMENTS
-class HistoryGeo(db.Model):
-	id = db.Column(db.String(25), primary_key=True, unique=True)
-	session_id = db.Column(db.String(25))
-	player_id = db.Column(db.String(25))
-	timestamp = db.Column(db.Date())
-	osm_object_id = db.Column(db.String(25))
-	geoobject_type = db.Column(db.String(50))
-	osm_object_attr = db.Column(db.String(150))
-	x_geom = db.Column(db.String(25))
-	y_geom = db.Column(db.String(25))
-
-	def __init__(self, id, session_id, player_id, geoobject_type, osm_object_id, osm_object_attr, x_geom, y_geom):
-		self.id = id #wie bekomme ich einen serial hier rein mit prefix geo_ ?
-		self.session_id = session_id
-		self.player_id = player_id
-		self.timestamp = datetime.now()
-		self.geoobject_type = geoobject_type
-		self.osm_object_id = osm_object_id
-		self.osm_object_attr = osm_object_attr
-		self.x_geom = x_geom
-		self.y_geom = y_geom
-
-	def __repr__(self):
-		'<History Geoobjects %r>' % (self.action_id)
 
 # COMMENTS
 class HistorySocial(db.Model):
@@ -140,7 +122,6 @@ class HistorySocial(db.Model):
 	social_type = db.Column(db.String(50))
 
 	def __init__(self, id, session_id, player_id, social_type):
-		self.id = id #wie bekomme ich einen serial hier rein mit prefix social_ ?
 		self.session_id = session_id
 		self.player_id = player_id
 		self.timestamp = datetime.now()
@@ -203,7 +184,6 @@ class GameMpTeams(db.Model):
 	color = db.Column(db.String(25))
 	
 	def __init__(self, session_id, teamname, color):
-		# self.id = => serial!
 		self.session_id = session_id
 		self.teamname = teamname
 		self.color = color
@@ -278,7 +258,6 @@ class ScheduleSpMotw(db.Model):
 	area = db.Column(db.String(25))
 	
 	def __init__(self, ammenity, time_start, time_end, area):
-		#self. week_id  => serial!
 		self.ammenity = ammenity
 		self.time_start = time_start
 		self.time_end = time_end

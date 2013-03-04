@@ -1,6 +1,6 @@
 {% extends "layout_main.html" %}
 
-{% block title_tag %}
+{% block title %}
 	Game
 {% endblock %}
 
@@ -22,7 +22,7 @@
 	</div>
 	<div data-role="fieldcontain">
 		<label for="selectmenu1">Wheelchair: </label>
-		<select name="Wheelchair" data-theme="b">
+		<select name="wheelchair" data-theme="b">
 			<option value="yes">Yes</option>
 			<option value="no">No</option>
 		</select>
@@ -51,10 +51,11 @@ var userMarker;
 	});
 
 	function sendData() {
-		$.getJSON('{{ url_for('verify') }}', {
+		$.getJSON('{{ url_for('verifyOsm') }}', {
 			ObjectName: $('input[name="name"]').val(),
-			ObjectOSMID: $('input[name="osm_id"]').val(),
-			ObjectAttribute: 'wheelchair=1'
+			ObjectId: $('input[name="osm_id"]').val(),
+			ObjectType: $('input[name="type"]').val(),
+			ObjectAttr: $('input[name="wheelchair"]').val(),
 		}, 
 		function(data) {
 			$("#title").text("Score: "+data.result);
@@ -96,13 +97,14 @@ var userMarker;
 			});
 			//lmarker.bindPopup(fillPopup(data.tags)).addTo(map);
 			lmarker.on('click',function(e) {
-				//alert(data.tags.name); // e is an event object (MouseEvent in this case)
-				$('#map').toggle();
-				$('#editObject').toggle();
-				$("input#name").val(data.tags.name);
-				$("input#type").val(data.tags.amenity);
-				$("input#osm_id").val(data.tags.id);
-				//alert(data.tags.id);
+				if(lmarker.getLatLng().distanceTo(userMarker.getLatLng())<200) { //200 m
+    				$('#map').toggle();
+    				$('#editObject').toggle();
+    				$("input#name").val(data.tags.name);
+    				$("input#type").val(data.tags.amenity);
+    				$("input#osm_id").val(data.tags.id);
+    				} else { alert("Ausser Reichweite"); //Durch bessere Anzeige ersetzen..
+    			} 
 			});
 			lmarker.addTo(map);
 		}
@@ -125,10 +127,10 @@ var userMarker;
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
 	<ul>
-		<li><a href="{{url_for('main')}}" data-transition="fade" data-theme="b" data-icon="star" class="ui-btn-active ui-state-persist">Menu</a></li>
-		<li><a href="{{url_for('score')}}" data-transition="fade" data-theme="b" data-icon="grid">Scores</a></li>
-		<li><a href="{{url_for('player_settings')}}" data-transition="fade" data-theme="b" data-icon="gear">Player</a></li>
-		<li><a href="{{url_for('about')}}" data-transition="fade" data-theme="b" data-icon="info">About</a></li>
+		<li><a href="{{url_for('main')}}" data-transition="fade" data-theme="b" data-icon="home" class="ui-btn-active ui-state-persist">Menu</a></li>
+		<li><a href="{{url_for('scores')}}" data-transition="fade" data-theme="b" data-icon="grid">Scores</a></li>
+		<li><a href="{{url_for('player')}}" data-transition="fade" data-theme="b" data-icon="gear">Player</a></li>
+		<li><a href="{{url_for('help')}}" data-transition="fade" data-theme="b" data-icon="grid">Help</a></li>
 	</ul>
 </div>
 {% endblock %}

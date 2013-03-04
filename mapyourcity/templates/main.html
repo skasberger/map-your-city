@@ -1,0 +1,26 @@
+{% extends "layout_main.html" %}
+
+{% block title %}
+	Game
+{% endblock %}
+
+{% block body %}
+<div id="header" data-theme="b" data-role="header">
+	<h1>Map Your City</h1>
+</div>
+<div id="content" data-role="content">  
+	<ul>
+		<a href="{{url_for('sp_ffa')}}" data-role="button" data-theme="b">Singleplayer</a>
+		<a href="{{url_for('mp_ffa')}}" data-role="button" data-theme="b">Multiplayer</a>
+		<a href="{{url_for('scores')}}" data-role="button" data-theme="a">Scores</a>
+	</ul>
+</div>
+<div id="nav" data-role="navbar" data-iconpos="top">
+	<ul>
+		<li><a href="{{url_for('about')}}" data-transition="fade" data-theme="b" data-icon="info" class="ui-btn-active ui-state-persist">About</a></li>
+		<li><a href="{{url_for('player')}}" data-transition="fade" data-theme="b" data-icon="grid">Player</a></li>
+		<li><a href="{{url_for('help')}}" data-transition="fade" data-theme="b" data-icon="grid">Help</a></li>
+		<li><a href="{{url_for('logout')}}" data-transition="fade" data-theme="b" data-icon="grid">Logout</a></li>
+	</ul>
+</div>
+{% endblock %}
