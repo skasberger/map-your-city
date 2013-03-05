@@ -1,5 +1,5 @@
 from mapyourcity import app, db
-from mapyourcity.models import SettingsPlayer, HistoryOsm
+from mapyourcity.models import Player, HistoryGeo, Game, Team, Scores
 from flask import Flask, request, session, g, jsonify, redirect, url_for, abort, render_template, flash
 from datetime import datetime
 
@@ -8,7 +8,7 @@ from datetime import datetime
 def before_request():
   g.player = None
   if 'player_id' in session:
-    g.player = SettingsPlayer.query.filter_by(id = str(session['player_id'])).first()
+    g.player = Player.query.filter_by(id = str(session['player_id'])).first()
 
 # COMMENTS
 @app.route('/')
@@ -22,9 +22,10 @@ def main():
 def login():
   error = None
   if request.method == 'POST':
-    player = SettingsPlayer.query.filter_by(username = request.form['username']).first()
+    player = Player.query.filter_by(username = request.form['username']).first()
     if player is not None and player.check_password(request.form['password']):
       session['player_id'] = player.id
+      player.set_last_login()
       return redirect(url_for('main'))
     else:
       error = 'Wrong Username or Password'
@@ -46,12 +47,13 @@ def register():
       error = 'You have to enter a password'
     elif request.form['password'] != request.form['password2']:
       error = 'The two passwords do not match'
-    elif SettingsPlayer.query.filter_by(username = request.form['username']).first() is not None:
+    elif Player.query.filter_by(username = request.form['username']).first() is not None:
       error = 'The username is already taken'
     else:
       g.player=None
-      player = SettingsPlayer(request.form['username'], request.form['email'], request.form['password'])
-      db.session.add(player)
+      player = Player(request.form['username'], request.form['email'], request.form['password'])
+      initScores=Scores(username=player.username, user_id=player.id)
+      db.session.add(player, initScores)
       db.session.commit()
       flash('Successfully registered!')
       return redirect(url_for('login'))
@@ -71,14 +73,15 @@ def verifyOsm():
   if not g.player:
     return redirect(url_for('login'))
   object_id=  request.args.get('ObjectId', 0, type=int)
-  name = request.args.get('ObjectName', '', type=str)
-  ammenity = request.args.get('ObjectType', '', type=str)
-  attribute = request.args.get('ObjectAttr', '', type=str)
-  geoObject = HistoryOsm(session_id=session['GameID'], player_id=g.player.id, object_id=object_id, name=name, ammenity=ammenity, attribute=attribute)
-  db.session.add(geoObject)
-  g.player.score=g.player.score+1
+  object_name = request.args.get('ObjectName', '', type=str)
+  object_type = request.args.get('ObjectType', '', type=str)
+  object_attribute = request.args.get('ObjectAttr', '', type=str)
+  score = History(game_id=g.player.game.id, player_id=g.player.id, event_type='osm')
+  history_id = g.player.scores.update(geoObject.score_points)
+  geo = HistoryGeo(history_id=history_id, object_id=object_id, object_name=object_name, object_type=object_type, object_attribute=object_attribute, object_latlng='test')
+  db.session.add(score, geo)
   db.session.commit()
-  return jsonify(result=g.player.score)
+  return jsonify(result=g.player.score.score_game)
 
 # COMMENTS
 @app.route('/setup/sp/ffa')
@@ -96,6 +99,8 @@ def sp_ffa():
   #db.session.add(newGame)
   #db.session.commit()
   #session['GameID'] = GameSp.query.filter_by(session_start=now).id
+  g.player.game = Game(player_id=g.player.id, region='graz', game_type='singleplayer',game_mode='ffa')
+  db.session.commit()  
   return render_template('game_sp_ffa.html')
 
 # COMMENTS
@@ -163,7 +168,10 @@ def player():
 def scores():
   if not g.player:
     return redirect(url_for('login'))
-  return render_template('scores.html')
+  #if(datetime.weekday()==1):
+    #Player.query.get().all().scores.all().reset_points_week()
+  scores=Scores.query.order_by('score_all desc').limit(10)
+  return render_template('scores.html', Scores=scores)
 
 # COMMENTS
 # @app.route('/score/<playerid>')

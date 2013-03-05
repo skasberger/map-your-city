@@ -10,7 +10,7 @@
 </div>
 <div id="content" data-role="content">  
 	<div data-role="collapsible" data-content-theme="b">
-		<h3 data-role="button" data-icon="single-user">Singleplayer</a></h3>
+		<h3 data-role="button">Singleplayer</h3>
 		<a href="{{url_for('setup_sp_ffa')}}" data-role="button" data-theme="a">Free For All</a>
 		<a href="{{url_for('sp_motw')}}" data-role="button" data-theme="a">Mapper of the Week</a>
 	</div>
@@ -20,7 +20,7 @@
 	</div>
 	<a href="{{url_for('scores')}}" data-role="button" data-theme="a">Highscores</a>
 </div>
-<div id="nav" data-role="navbar" data-iconpos="top">
+<div id="nav" data-role="navbar" >
 	<ul>
 		<li><a href="{{url_for('about')}}" data-transition="fade" data-theme="b" data-icon="info">About</a></li>
 		<li><a href="{{url_for('player')}}" data-transition="fade" data-theme="b" data-icon="grid">Player</a></li>

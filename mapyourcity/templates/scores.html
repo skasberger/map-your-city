@@ -10,12 +10,16 @@
 </div>
 <div id="map" height="100%"/>
 	<div id="content" data-role="content">
-		<p>
-	</div> 
+		<h1>Highscore Toplist</h1>
+		<ul id="score">
+			{% for score in Scores %}
+    		<li>{{ score.username }} : {{ score.score_all }}</li>
+    		{% endfor %}
+    	</ul>
+    </div> 
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
 	<ul>
-		<li><a href="{{url_for('game')}}" data-transition="fade" data-theme="b" data-icon="star">Game</a></li>
 		<li><a href="{{url_for('main')}}" data-transition="fade" data-theme="b" data-icon="grid">Menu</a></li>
 		<li><a href="{{url_for('player')}}" data-transition="fade" data-theme="b" data-icon="gear">Player</a></li>
 		<li><a href="{{url_for('help')}}" data-transition="fade" data-theme="b" data-icon="grid">Help</a></li>
