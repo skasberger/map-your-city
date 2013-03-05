@@ -1,6 +1,7 @@
 from mapyourcity import app, db
 from mapyourcity.models import SettingsPlayer, HistoryOsm
 from flask import Flask, request, session, g, jsonify, redirect, url_for, abort, render_template, flash
+from datetime import datetime
 
 # COMMENTS
 @app.before_request
@@ -73,11 +74,51 @@ def verifyOsm():
   name = request.args.get('ObjectName', '', type=str)
   ammenity = request.args.get('ObjectType', '', type=str)
   attribute = request.args.get('ObjectAttr', '', type=str)
-  geoObject = HistoryOsm(session, g.player.id, object_id, name, ammenity, attribute)
+  geoObject = HistoryOsm(session_id=session['GameID'], player_id=g.player.id, object_id=object_id, name=name, ammenity=ammenity, attribute=attribute)
   db.session.add(geoObject)
   g.player.score=g.player.score+1
   db.session.commit()
   return jsonify(result=g.player.score)
+
+# COMMENTS
+@app.route('/setup/sp/ffa')
+def setup_sp_ffa():
+  if not g.player:
+    return redirect(url_for('login'))
+  return render_template('setup_sp_ffa.html')
+
+# COMMENTS
+@app.route('/sp/ffa')
+def sp_ffa():
+  if not g.player:
+    return redirect(url_for('login'))
+  #newGame = GameSp(player_id=1, region='graz', game_type='ffa')
+  #db.session.add(newGame)
+  #db.session.commit()
+  #session['GameID'] = GameSp.query.filter_by(session_start=now).id
+  return render_template('game_sp_ffa.html')
+
+# COMMENTS
+@app.route('/sp/motw')
+def sp_motw():
+  if not g.player:
+    return redirect(url_for('login'))
+  return render_template('game_sp_motw.html')
+
+# COMMENTS
+@app.route('/setup/mp/ffa')
+def setup_mp_ffa():
+  if not g.player:
+    return redirect(url_for('login'))
+  return render_template('setup_mp_ffa.html')
+
+# COMMENTS
+@app.route('/mp/ffa')
+def mp_ffa():
+  if not g.player:
+    return redirect(url_for('login'))
+  return render_template('game_mp_ffa.html')
+
 
 # COMMENTS
 @app.route('/player')
@@ -116,21 +157,6 @@ def player():
 #  if not g.player:
 #    return redirect(url_for('login'))
 #  return render_template('game.html')
-
-
-# COMMENTS
-@app.route('/sp/ffa')
-def sp_ffa():
-  if not g.player:
-    return redirect(url_for('login'))
-  return render_template('game_sp_ffa.html')
-
-# COMMENTS
-@app.route('/mp/ffa')
-def mp_ffa():
-  if not g.player:
-    return redirect(url_for('login'))
-  return render_template('game_mp_ffa.html')
 
 # COMMENTS
 @app.route('/scores')

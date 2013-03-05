@@ -1,11 +1,27 @@
 function initMap() {
-  var attr_osm = 'Map data &copy; <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors';
-  var osm = new L.TileLayer('http://{s}.tile.cloudmade.com/cd33cf0ed5eb47bea3410fa19efe3c6a/1714/256/{z}/{x}/{y}.png', {attribution: [attr_osm]});
+
+  var osm = new L.TileLayer('http://{s}.tile.cloudmade.com/cd33cf0ed5eb47bea3410fa19efe3c6a/1714/256/{z}/{x}/{y}.png', { 
+      attribution: 'Map data &copy; <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors'
+    });
+  
+  /*var orthoGraz = new L.TileLayer.wms('http://geodaten1.graz.at/ArcGIS_Graz/services/Extern/LUFTBILD_WMS/MapServer/WMSServer', { 
+    layers: '1',
+    format: 'image/png',
+    attribution: 'Orthophotos Open Government Data Stadt Graz'
+    });*/
+
+  /*var orthoWien = new L.TileLayer.wms('http://data.wien.gv.at/daten/wms', { 
+    layers: 'XXXXXX',
+    format: 'image/png',
+    attribution: 'Orthophotos Open Government Data Stadt Ẃien'
+    });*/
 
   map = new L.Map('map', {
     center: new L.LatLng(47.07, 15.43),
       zoom: 17,
       layers: osm,
+      //layers: orthoWien,
+      //layers: orthoGraz,
   });
 
   map.getControl = function () {

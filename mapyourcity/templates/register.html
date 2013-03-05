@@ -27,17 +27,14 @@
 		</div>
 		<div data-role="fieldcontain" class="ui-hide-label">
 			<label for="password2">Password:</label>
-			<input type="password" name="password2" id="password2" value="" placeholder="Re-enter Password"/>
+			<input type="password" name="password2" id="password2" value="" placeholder="Password"/>
 		</div>
 		<button data-disabled="false" class="ui-btn-hidden" type="submit" data-theme="c" name="submit" value="submit-value">Submit</button>
 	</form>
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
 	<ul>
-		<li><a href="{{url_for('main')}}" data-transition="fade" data-theme="b" data-icon="home" class="ui-btn-active ui-state-persist">Menu</a></li>
-		<li><a href="{{url_for('scores')}}" data-transition="fade" data-theme="b" data-icon="grid">Scores</a></li>
-		<li><a href="{{url_for('player')}}" data-transition="fade" data-theme="b" data-icon="gear">Player</a></li>
-		<li><a href="{{url_for('about')}}" data-transition="fade" data-theme="b" data-icon="info">About</a></li>
+		<li><a href="{{url_for('login')}}" data-transition="fade" data-theme="b">Login</a></li>
 	</ul>
 </div>
 {% endblock %}

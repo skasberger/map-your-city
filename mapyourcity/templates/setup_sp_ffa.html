@@ -1,0 +1,35 @@
+{% extends "layout_main.html" %}
+
+{% block title %}
+	Game
+{% endblock %}
+
+{% block body %}
+<div id="header" data-theme="b" data-role="header">
+	<a href="{{url_for('main')}}" data-theme="b" data-icon="back">back</a>
+	<h1>Game Setup</h1>
+</div>
+<div id="content" height="100%" data-role="content">
+	Game Modi: Free For All
+	Player: {{ g.player.username }}
+
+	<label for="slider-0">Radius:</label>
+	<input type="range" name="slider" id="slider-0" value="100" min="20" max="200"  />
+
+	<div data-role="fieldcontain">
+		<fieldset data-role="controlgroup">
+			<label for="checkbox-1">Restaurant</label>
+			<input type="checkbox" name="checkbox-1" id="checkbox-1" class="custom" />
+			<label for="checkbox-2">Bar</label>
+			<input type="checkbox" name="checkbox-2" id="checkbox-2" class="custom" />
+			<label for="checkbox-3">Cafe</label>
+			<input type="checkbox" name="checkbox-3" id="checkbox-3" class="custom" />
+			<label for="checkbox-4">Snack</label>
+			<input type="checkbox" name="checkbox-4" id="checkbox-4" class="custom" />
+		</fieldset>
+	</div>
+</div>
+<div id="nav" data-role="navbar" data-iconpos="top">
+	<li><a href="{{url_for('sp_ffa')}}" data-transition="fade" data-theme="b" data-icon="home">PLAY</a></li>
+</div>
+{% endblock %}

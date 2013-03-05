@@ -11,10 +11,11 @@ class SettingsPlayer(db.Model):
 	pw_hash = db.Column(db.String(160))
 	created_at = db.Column(db.Date())
 	last_login = db.Column(db.Date())
-	language = db.Column(db.String(10))
+	lang_short = db.Column(db.String(10))
 	avatar = db.Column(db.String(30))
 	color = db.Column(db.String(10))
-	region = db.Column(db.String(80))
+	home_region = db.Column(db.String(80))
+	actual_region = db.Column(db.String(80))
 	country = db.Column(db.String(80))
 	osm_login = db.Column(db.String(50), unique=True)
 	osm_hash = db.Column(db.String(160))
@@ -45,8 +46,11 @@ class SettingsPlayer(db.Model):
 	def set_color(self, color):
 		self.color = color
 
-	def set_region(self, region):
-		self.region = region 
+	def set_actual_region(self, actual_region):
+		self.actual_region = actual_region 
+
+	def set_home_region(self, home_region):
+		self.home_region = home_region 
 
 	def get_country(self, region):
 		self.country = SettingsRegions.query.filter_by(regionname = region).first()
@@ -55,8 +59,8 @@ class SettingsPlayer(db.Model):
 		self.osm_login = login
 		self.osm_hash = hash_password(password)
 
-	def set_language(self, language):
-		self.language = language
+	def set_language(self, lang_short):
+		self.lang_short = lang_short
 	
 	def set_username(self, username):
 		self.username = username
@@ -72,10 +76,10 @@ class SettingsPlayer(db.Model):
 
 # COMMENTS
 class HistoryOsm(db.Model):
-	id = db.Column(db.String(25), primary_key=True, unique=True)
+	id = db.Column(db.Integer, primary_key=True, unique=True)
 	score = db.Column(db.Integer)
-	session_id = db.Column(db.String(25))
-	player_id = db.Column(db.String(25))
+	session_id = db.Column(db.Integer)
+	player_id = db.Column(db.Integer)
 	timestamp = db.Column(db.Date())
 	object_id = db.Column(db.String(25))
 	name = db.Column(db.String(150))
@@ -85,6 +89,7 @@ class HistoryOsm(db.Model):
 	y_geom = db.Column(db.String(25))
 
 	def __init__(self, session_id, player_id, object_id, name, ammenity, attribute):
+		self.score = 1 # set dynamically
 		self.session_id = session_id
 		self.player_id = player_id
 		self.timestamp = datetime.now()
@@ -94,17 +99,17 @@ class HistoryOsm(db.Model):
 		self.attribute = attribute
 
 	def __repr__(self):
-		'<History Geoobjects %r>' % (self.action_id)
+		'<History Geoobjects %r>' % (self.session_id)
 
 # COMMENTS
 class HistoryBadges(db.Model):
-	id = db.Column(db.String(25), primary_key=True, unique=True)
-	badge_id = db.Column(db.String(25))
-	session_id = db.Column(db.String(25))
-	player_id = db.Column(db.String(25))
+	id = db.Column(db.Integer, primary_key=True, unique=True)
+	badge_id = db.Column(db.Integer)
+	session_id = db.Column(db.Integer)
+	player_id = db.Column(db.Integer)
 	timestamp = db.Column(db.Date())
 
-	def __init__(self, id, badge_id, session_id, player_id):
+	def __init__(self, badge_id, session_id, player_id):
 		self.badge_id = badge_id 
 		self.session_id = session_id
 		self.player_id = player_id
@@ -115,13 +120,13 @@ class HistoryBadges(db.Model):
 
 # COMMENTS
 class HistorySocial(db.Model):
-	id = db.Column(db.String(25), primary_key=True, unique=True)
-	session_id = db.Column(db.String(25))
-	player_id = db.Column(db.String(25))
+	id = db.Column(db.Integer, primary_key=True, unique=True)
+	session_id = db.Column(db.Integer)
+	player_id = db.Column(db.Integer)
 	timestamp = db.Column(db.Date())
 	social_type = db.Column(db.String(50))
 
-	def __init__(self, id, session_id, player_id, social_type):
+	def __init__(self, session_id, player_id, social_type):
 		self.session_id = session_id
 		self.player_id = player_id
 		self.timestamp = datetime.now()
@@ -132,22 +137,20 @@ class HistorySocial(db.Model):
 
 # COMMENTS
 class GameSp(db.Model):
-	session_id = db.Column(db.String(25), primary_key=True, unique=True)
-	player_id = db.Column(db.String(25))
+	session_id = db.Column(db.Integer, primary_key=True, unique=True)
+	player_id = db.Column(db.Integer)
 	region = db.Column(db.String(25))
 	game_type = db.Column(db.String(25))
 	session_start = db.Column(db.Date())
 	session_end = db.Column(db.Date())
 	session_status = db.Column(db.String(20))
 
-	def __init__(self, session_id, player_id, region, game_type, session_start, session_end):
-		self.session_id = session_id
+	def __init__(self, player_id, region, game_type):
 		self.player_id = player_id
 		self.region = region
 		self.game_type = game_type
-		self.session_start = session_start
-		self.session_end = session_end
-		self.session_status = get_session_status(session_id)
+		self.session_start = datetime.now()
+		self.session_status = 'started'
 	
 	# def get_session_status(self, session_id):
 
@@ -156,20 +159,18 @@ class GameSp(db.Model):
 
 # COMMENTS
 class GameMp(db.Model):
-	session_id = db.Column(db.String(25), primary_key=True, unique=True)
+	session_id = db.Column(db.Integer, primary_key=True, unique=True)
 	region = db.Column(db.String(25))
 	game_type = db.Column(db.String(25))
 	session_start = db.Column(db.Date())
 	session_end = db.Column(db.Date())
 	session_status = db.Column(db.String(20))
 
-	def __init__(self, session_id, region, game_type, session_start, session_end):
-		self.session_id = session_id
+	def __init__(self, region, game_type):
 		self.region = region
 		self.game_type = game_type
-		self.session_start = session_start
-		self.session_end = session_end
-		self.session_status = get_session_status(session_id)
+		self.session_start = datetime.now()
+		self.session_status = 'started'
 
 	# def get_session_status(self, session_id):
 
@@ -179,8 +180,8 @@ class GameMp(db.Model):
 # COMMENTS
 class GameMpTeams(db.Model):
 	id = db.Column(db.Integer, primary_key=True, unique=True)
-	session_id = db.Column(db.String(25))
 	teamname = db.Column(db.String(25))
+	session_id = db.Column(db.Integer)
 	color = db.Column(db.String(25))
 	
 	def __init__(self, session_id, teamname, color):
@@ -194,7 +195,7 @@ class GameMpTeams(db.Model):
 # COMMENTS
 class GameMpTeamsPlayers(db.Model):
 	team_id = db.Column(db.Integer, primary_key=True, unique=False)
-	player_id = db.Column(db.String(25))
+	player_id = db.Column(db.Integer)
 	completed_game = db.Column(db.String(25))
 	
 	def __init__(self, team_id, player_id):
@@ -207,51 +208,50 @@ class GameMpTeamsPlayers(db.Model):
 
 # COMMENTS
 class SettingsBadges(db.Model):
-	badge_id = db.Column(db.String(25), primary_key=True, unique=True)
-	score = db.Column(db.String(25))
+	badge_id = db.Column(db.Integer, primary_key=True, unique=True)
+	score = db.Column(db.Integer)
 	name = db.Column(db.String(25), unique=True)
 	image = db.Column(db.String(25), unique=True)
 	
-	def __init__(self, badge_id, score, name, image):
-		self.badge_id = badge_id
+	def __init__(self, score, name, image):
 		self.score = score
 		self.name = name
 		self.image = image
 
 	def __repr__(self):
-		'<Badges %r>' % (self.badge_id)
+		'<Badges %r>' % (self.name)
 
 # COMMENTS
 class SettingsScoresFfa(db.Model):
-	score_id = db.Column(db.String(25), primary_key=True, unique=True)
-	name = db.Column(db.String(25), unique=True)
+	name = db.Column(db.String(25), primary_key=True, unique=True)
 	score = db.Column(db.Integer)
 	
-	def __init__(self, score_id, name, score):
-		self.score_id = score_id
+	def __init__(self, name, score):
 		self.name = name
 		self.score = score
 
 	def __repr__(self):
-		'<Scorelist_FFA %r>' % (self.score_id)
+		'<Scorelist_FFA %r>' % (self.name)
 
 # COMMENTS
 class SettingsRegions(db.Model):
 	region_short = db.Column(db.String(25), primary_key=True, unique=True)
-	regionname = db.Column(db.String(120), unique=True)
-	country = db.Column(db.Integer)
+	region_full = db.Column(db.String(120), unique=True)
+	country_short = db.Column(db.String(5))
+	country_full = db.Column(db.String(100))
 
-	def __init__(self, regionname, region_short, country):
+	def __init__(self, region_short, region_full, country_full, country_short):
 		self.region_short = region_short
-		self.regionname = regionname
-		self.country = country
+		self.region_full = region_full
+		self.country_short = country_short
+		self.country_full = country_full
 
 	def __repr__(self):
 		'<Regions %r>' % (self.region_short)
 
 # COMMENTS
 class ScheduleSpMotw(db.Model):
-	week_id = db.Column(db.String(35), primary_key=True, unique=True)
+	week_id = db.Column(db.Integer, primary_key=True, unique=True)
 	ammenity = db.Column(db.String(25))
 	time_start = db.Column(db.Date())
 	time_end = db.Column(db.Date())
@@ -264,7 +264,7 @@ class ScheduleSpMotw(db.Model):
 		self.area = area
 
 	def __repr__(self):
-		'<Schedule MOTW %r>' % (self.week_id)
+		'<Schedule MOTW %r>' % (self.time_start)
 
 # COMMENTS
 class SettingsAmmenities(db.Model):

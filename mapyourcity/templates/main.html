@@ -9,15 +9,20 @@
 	<h1>Map Your City</h1>
 </div>
 <div id="content" data-role="content">  
-	<ul>
-		<a href="{{url_for('sp_ffa')}}" data-role="button" data-theme="b">Singleplayer</a>
-		<a href="{{url_for('mp_ffa')}}" data-role="button" data-theme="b">Multiplayer</a>
-		<a href="{{url_for('scores')}}" data-role="button" data-theme="a">Scores</a>
-	</ul>
+	<div data-role="collapsible" data-content-theme="b">
+		<h3 data-role="button" data-icon="single-user">Singleplayer</a></h3>
+		<a href="{{url_for('setup_sp_ffa')}}" data-role="button" data-theme="a">Free For All</a>
+		<a href="{{url_for('sp_motw')}}" data-role="button" data-theme="a">Mapper of the Week</a>
+	</div>
+	<div data-role="collapsible" data-content-theme="b">
+		<h3 data-role="button">Multiplayer</a></h3>
+		<a href="{{url_for('setup_mp_ffa')}}" data-role="button" data-theme="a">Free For All</a>
+	</div>
+	<a href="{{url_for('scores')}}" data-role="button" data-theme="a">Highscores</a>
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
 	<ul>
-		<li><a href="{{url_for('about')}}" data-transition="fade" data-theme="b" data-icon="info" class="ui-btn-active ui-state-persist">About</a></li>
+		<li><a href="{{url_for('about')}}" data-transition="fade" data-theme="b" data-icon="info">About</a></li>
 		<li><a href="{{url_for('player')}}" data-transition="fade" data-theme="b" data-icon="grid">Player</a></li>
 		<li><a href="{{url_for('help')}}" data-transition="fade" data-theme="b" data-icon="grid">Help</a></li>
 		<li><a href="{{url_for('logout')}}" data-transition="fade" data-theme="b" data-icon="grid">Logout</a></li>
