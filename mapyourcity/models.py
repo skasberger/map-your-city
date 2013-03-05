@@ -32,6 +32,7 @@ class Player(db.Model):
 		self.pw_hash = self.get_hash(password)
 		self.created_at = datetime.now()
 		self.last_login = datetime.now()
+		self.score = Scores(self.username,self.id)
 
 	def get_hash(self, password):
 		return generate_password_hash(password)
@@ -82,7 +83,7 @@ class Scores(db.Model):
 	username = db.Column(db.String(25), unique=True)
 	user_id = db.Column(db.Integer, unique=True)
 	score_all = db.Column(db.Integer)
-	score_currentGame = db.Column(db.Integer)
+	score_game = db.Column(db.Integer)
 	score_week = db.Column(db.Integer)
 	created_at = db.Column(db.Date())
 	updated_at = db.Column(db.Date())
@@ -212,7 +213,7 @@ class HistoryGeo(db.Model):
 		self.object_id = object_id
 		self.object_name = object_name
 		self.object_type = object_type
-		self.object_attributes = object_attributes
+		self.object_attributes = object_attribute
 		self.object_latlng = object_latlng
 
 	def __repr__(self):

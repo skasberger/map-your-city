@@ -9,25 +9,40 @@
 	<h1 id="title">Map Your City</h1>
 </div>
 <div id="editObject" style="display: none">
-	<div data-role="fieldcontain">
-		<input type="hidden" name="osm_id" id="osm_id" value="" data-clear-btn="true" placeholder="" />
-	</div>
-	<div data-role="fieldcontain">
-		<label for="name" >Name:</label>
-		<input type="text" name="name" id="name" value="" data-clear-btn="true" placeholder="Name" />
-	</div>
-	<div data-role="fieldcontain">
-		<label for="type" >Typ:</label>
-		<input type="text" name="type" id="type" value="" data-clear-btn="true" placeholder="Type" />
-	</div>
-	<div data-role="fieldcontain">
-		<label for="selectmenu1">Wheelchair: </label>
-		<select name="wheelchair" data-theme="b">
-			<option value="yes">Yes</option>
-			<option value="no">No</option>
-		</select>
-	</div>
-	<br><br><br>
+	<form>
+		<fieldset data-role="fieldcontain">
+			<input type="hidden" name="object_id" id="object_id" value="" data-clear-btn="true" placeholder="" />
+		</fieldset>
+		<fieldset data-role="fieldcontain">
+			<label for="object_name" >Name:</label>
+			<input type="text" name="object_name" id="object_name" value="" data-clear-btn="true" placeholder="Name" />
+		</fieldset>
+		<fieldset data-role="fieldcontain">
+			<label for="object_type" >Type:</label>
+			<input type="text" name="object_type" id="object_type" value="" data-clear-btn="true" placeholder="Type" />
+		</fieldset>
+		<fieldset data-role="controlgroup" data-type="horizontal">
+        	<legend>Wheelchair</legend>
+        	<input type="radio" name="wheelchair-yes" id="wheelchair-yes" value="yes">
+        	<label for="wheelchair-yes">Yes</label>
+        	<input type="radio" name="wheelchair-no" id="wheelchair-no" value="no">
+        	<label for="wheelchair-no">No</label>
+    	</fieldset>
+	    <fieldset data-role="controlgroup" data-type="horizontal">
+        	<legend>Smoking</legend>
+        	<input type="radio" name="smoking-yes" id="smoking-yes" value="yes">
+        	<label for="smoking-yes">Yes</label>
+        	<input type="radio" name="smoking-no" id="smoking-no" value="no">
+        	<label for="smoking-no">No</label>
+    	</fieldset>
+	    <fieldset data-role="controlgroup" data-type="horizontal">
+        	<legend>Vegan</legend>
+        	<input type="radio" name="vegan-yes" id="vegan-yes" value="yes">
+        	<label for="vegan-yes">Yes</label>
+        	<input type="radio" name="vegan-no" id="vegan-no" value="no">
+        	<label for="vegan-no">No</label>
+    	</fieldset>
+	</form>
 	<button data-disabled="false" id="send" class="ui-btn-hidden" type="button" data-theme="c" onclick="sendData();">Submit</button>
 	<button data-disabled="false" class="ui-btn-hidden" type="reset" data-theme="c" name="reset" value="submit-value" onclick="$('#map').show(); $('#editObject').hide();">Cancel</button>
 </div>
@@ -100,9 +115,9 @@ var userMarker;
 				if(lmarker.getLatLng().distanceTo(userMarker.getLatLng())<200) { //200 m
     				$('#map').toggle();
     				$('#editObject').toggle();
-    				$("input#name").val(data.tags.name);
-    				$("input#type").val(data.tags.amenity);
-    				$("input#osm_id").val(data.tags.id);
+    				$("input#object_name").val(data.tags.name);
+    				$("input#object_type").val(data.tags.amenity);
+    				$("input#object_id").val(data.tags.id);
     				} else { alert("Ausser Reichweite"); //Durch bessere Anzeige ersetzen..
     			} 
 			});

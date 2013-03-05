@@ -10,19 +10,19 @@
 	<h1>Game Setup</h1>
 </div>
 <div id="content" height="100%" data-role="content">
-	Game Modi: Free For All
-	Player: {{ g.player.username }}
+	<a href="{{url_for('help')}}" data-role="button" data-theme="a" data-icon="info" data-iconpos="top">Game Modi: Free For All</a>
+	<p data-role="button" data-inline="true">Player: {{ g.player.username }}</p>
 
 	<label for="slider-0">Radius:</label>
 	<input type="range" name="slider" id="slider-0" value="100" min="20" max="200"  />
 
 	<div data-role="fieldcontain">
-		<fieldset data-role="controlgroup" data-mini="true">
-			<label for="checkbox-1">Restaurant</label>
+		<fieldset data-role="controlgroup">
+			<label for="osmobject-restaurant">Restaurant</label>
 			<input type="checkbox" name="osmobject-restaurant" id="osmobject-restaurant" class="custom" />
-			<label for="checkbox-2">Bar</label>
+			<label for="osmobject-bar">Bar</label>
 			<input type="checkbox" name="osmobject-bar" id="osmobject-bar" class="custom" />
-			<label for="checkbox-4">Bank</label>
+			<label for="osmobject-bank">Bank</label>
 			<input type="checkbox" name="osmobject-bank" id="osmobject-bank" class="custom" />
 		</fieldset>
 	</div>

@@ -1,5 +1,5 @@
 from mapyourcity import app, db
-from mapyourcity.models import Player, HistoryGeo, Game, Team, Scores
+from mapyourcity.models import Player, HistoryGeo, Game, Team, Scores, History
 from flask import Flask, request, session, g, jsonify, redirect, url_for, abort, render_template, flash
 from datetime import datetime
 
@@ -52,8 +52,7 @@ def register():
     else:
       g.player=None
       player = Player(request.form['username'], request.form['email'], request.form['password'])
-      initScores=Scores(username=player.username, user_id=player.id)
-      db.session.add(player, initScores)
+      db.session.add(player)
       db.session.commit()
       flash('Successfully registered!')
       return redirect(url_for('login'))
@@ -75,11 +74,14 @@ def verifyOsm():
   object_id=  request.args.get('ObjectId', 0, type=int)
   object_name = request.args.get('ObjectName', '', type=str)
   object_type = request.args.get('ObjectType', '', type=str)
+  object_latlng = request.args.get('ObjectLatLng', '', type=str)
   object_attribute = request.args.get('ObjectAttr', '', type=str)
-  score = History(game_id=g.player.game.id, player_id=g.player.id, event_type='osm')
-  history_id = g.player.scores.update(geoObject.score_points)
-  geo = HistoryGeo(history_id=history_id, object_id=object_id, object_name=object_name, object_type=object_type, object_attribute=object_attribute, object_latlng='test')
-  db.session.add(score, geo)
+  print object_latlng
+  score = History(g.player.game.id, g.player.id,'osm')
+  history_id = g.player.score.update(1)
+  geo = HistoryGeo(history_id,object_id, object_name,object_type, object_attribute, object_latlng)
+  db.session.add(score)
+  db.session.add(geo)
   db.session.commit()
   return jsonify(result=g.player.score.score_game)
 
