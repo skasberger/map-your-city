@@ -117,11 +117,14 @@ class Game(db.Model):
 	id = db.Column(db.Integer, primary_key=True, unique=True)
 	player_id = db.Column(db.Integer)
 	region = db.Column(db.String(25))
-	game_type = db.Column(db.String(25)) #Singleplayer/Multiplayer
+	game_type = db.Column(db.Integer) #1=Singleplayer/2=Multiplayer
 	game_mode = db.Column(db.String(25)) #FFA/MapperOfTheWeek/...
 	session_start = db.Column(db.Date())
 	session_end = db.Column(db.Date())
 	session_status = db.Column(db.String(20))
+	is_active = db.Column(db.Boolean)
+	gamempffa_id = db.Column(db.Integer, db.ForeignKey('game_mp_ffa.id'))
+	gamempffa = db.relationship('Game_mp_ffa', backref=db.backref('games', lazy='dynamic'))
 
 	def __init__(self, player_id, region, game_type, game_mode):
 		self.player_id = player_id
@@ -129,32 +132,42 @@ class Game(db.Model):
 		self.game_type = game_type
 		self.session_start = datetime.now()
 		self.session_status = 'started'
+		self.is_active = True
+
+	def close_game(self):
+		self.session_status = 'game closed'
+		self.is_active=False
 	
 	def __repr__(self):
 		'<Game %r>' % (self.player_id)
 
 # COMMENTS
-class GameMpFfa(db.Model):
+class Game_mp_ffa(db.Model):
 	id = db.Column(db.Integer, primary_key=True, unique=True)
+	name = db.Column(db.String(25))
 	duration = db.Column(db.Integer)
 	pw_hash = db.Column(db.String(160))
-	max_player = db.Column(db.Integer)
+	max_players = db.Column(db.Integer)
 	num_teams = db.Column(db.Integer)
-	wheelchair = db.Column(db.Boolean)
-	smoking = db.Column(db.Boolean)
-	vegetarian = db.Column(db.Boolean)
+	object_restaurant = db.Column(db.Boolean)
+	object_bar = db.Column(db.Boolean)
+	object_bank = db.Column(db.Boolean)
 
-	def __init__(self, duration, password, max_player, num_teams):
+	def __init__(self, name, duration, password, num_teams, max_players, verify_wheelchair,verify_smoking,verify_vegetarian,object_restaurant,object_bar,object_bank):
+		self.name = name
 		self.duration = duration
 		self.pw_hash = self.get_hash(password)
-		self.max_player = max_player
+		self.max_players = max_players
 		self.num_teams = num_teams
+		self.object_restaurant = object_restaurant
+		self.object_bar = object_bar
+		self.object_bank = object_bank
 	
 	def get_hash(self, password):
 		return generate_password_hash(password)
 
-	#def set_geoobjects(self, ):
-		
+	def check_password(self,password):
+		return check_password_hash(self.pw_hash, password)
 
 	def __repr__(self):
 		'<SP Game Info %r>' % (self.session_id)
@@ -298,16 +311,16 @@ class OsmObjects(db.Model):
 	title = db.Column(db.String(35), primary_key=True, unique=True)
 	full_name = db.Column(db.String(50))
 	description = db.Column(db.String(300))
-	webpage = db.Column(db.String(100))
-	wheelchair = db.Column(db.Boolean)
-	opening_hours = db.Column(db.Boolean)
-	smoking = db.Column(db.Boolean)
-	vegan = db.Column(db.Boolean)
-	vegetarian = db.Column(db.Boolean)
-	kitchen = db.Column(db.Boolean)
-	shelter = db.Column(db.Boolean)
-	bench = db.Column(db.Boolean)
-	bin = db.Column(db.Boolean)
+	osm_page = db.Column(db.String(100))
+	verify_wheelchair = db.Column(db.Boolean)
+	verify_opening_hours = db.Column(db.Boolean)
+	verify_smoking = db.Column(db.Boolean)
+	verify_vegan = db.Column(db.Boolean)
+	verify_vegetarian = db.Column(db.Boolean)
+	verify_kitchen = db.Column(db.Boolean)
+	verify_shelter = db.Column(db.Boolean)
+	verify_bench = db.Column(db.Boolean)
+	verify_bin = db.Column(db.Boolean)
 
 	def __init__(self, title, full_name):
 		self.title = title

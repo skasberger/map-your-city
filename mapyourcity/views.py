@@ -1,5 +1,5 @@
 from mapyourcity import app, db
-from mapyourcity.models import Player, HistoryGeo, Game, Team, Scores, History
+from mapyourcity.models import Player, HistoryGeo, Game, Team, Scores, History, Game_mp_ffa
 from flask import Flask, request, session, g, jsonify, redirect, url_for, abort, render_template, flash
 from datetime import datetime
 
@@ -78,6 +78,7 @@ def verifyOsm():
   object_attribute.append(request.args.get('ObjectAttrWheel', '', type=str))
   object_attribute.append(request.args.get('ObjectAttrVeg', '', type=str))
   object_attribute.append(request.args.get('ObjectAttrSmo', '', type=str))
+  g.player.set_actual_region(object_latlng)
   score = History(g.player.game.id, g.player.id,'osm')
   history_id = g.player.score.update(1)
   geo = HistoryGeo(history_id, object_id, object_name, object_type, object_attribute, object_latlng)
@@ -102,7 +103,7 @@ def sp_ffa():
   #db.session.add(newGame)
   #db.session.commit()
   #session['GameID'] = GameSp.query.filter_by(session_start=now).id
-  g.player.game = Game(player_id=g.player.id, region='graz', game_type='singleplayer',game_mode='ffa')
+  g.player.game = Game(player_id=g.player.id, region='graz', game_type=1,game_mode='ffa')
   db.session.commit()  
   return render_template('game_sp_ffa.html')
 
@@ -118,7 +119,45 @@ def sp_motw():
 def setup_mp_ffa():
   if not g.player:
     return redirect(url_for('login'))
-  return render_template('setup_mp_ffa.html')
+  '''if request.method == 'POST':
+    if not request.form['gametitle']:
+      error = 'You have to enter a game title'
+    else:
+      if g.player.game is not None:
+        g.player.game.close_game()
+      g.player.game = Game(g.player.id, request.form['gameregion'],2, 'ffa')
+      g.player.game.gamempffa = Game_mp_ffa('Testgame',10, 'password', 4, 4,True,True,False)
+      db.session.commit()'''
+      #return redirect(url_for('login'))
+  return render_template('setup_mp_ffa.html', Games = Game.query.filter_by(is_active=True))
+
+@app.route('/setup/mp/ffa/create')
+def create_mp_ffa():
+  if not g.player:
+    return jsonify(result="You must be logged in to create a game!")
+  game_name = request.args.get('GameName', '',str)
+  game_region = request.args.get('GameRegion', '',str)
+  game_duration = request.args.get('GameDuration', 0,int)
+  game_secret = request.args.get('GameSecret', '',str)
+  game_maxteams = request.args.get('GameMaxTeams', 0,int)
+  game_maxplayers = request.args.get('GameMaxPlayers', 0,int)
+  game_object_restaurant = request.args.get('GameObjectRestaurant',bool)
+  game_object_bar = request.args.get('GameObjectBar',bool)
+  game_object_bank = request.args.get('GameObjectBank',bool)
+  if g.player.game is not None:
+    g.player.game.close_game()
+  g.player.game = Game(g.player.id, game_region,2, 'ffa')
+  g.player.game.gamempffa = Game_mp_ffa(game_name,game_duration,game_secret, game_maxteams, game_maxplayers,game_attribute_wheelchair,game_attribute_smoking,game_attribute_vegetarian,game_object_restaurant,game_object_cafe,game_object_bar,game_object_snack)
+  db.session.commit()
+  return jsonify(result=g.player.game.gamempffa.name)
+
+@app.route('/setup/mp/ffa/join')
+def join_mp_ffa():
+  if not g.player:
+    return jsonify(result="You must be logged in to create a game!")
+  g.player.game = Game.query.filter_by(id=request.args.get('GameID',int)).first()
+  db.session.commit()
+  return jsonify(result=g.player.game.gamempffa.name)
 
 # COMMENTS
 @app.route('/mp/ffa')
@@ -173,8 +212,9 @@ def scores():
     return redirect(url_for('login'))
   #if(datetime.weekday()==1):
     #Player.query.get().all().scores.all().reset_points_week()
-  scores=Scores.query.order_by('score_all desc').limit(10)
-  return render_template('scores.html', Scores=scores)
+  #scores=Scores.query.order_by('score_all desc').limit(10)
+  players = g.player.game.players.all()
+  return render_template('scores.html', Players=players)
 
 # COMMENTS
 # @app.route('/score/<playerid>')

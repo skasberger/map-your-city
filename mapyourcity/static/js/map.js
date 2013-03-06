@@ -64,7 +64,7 @@ function parseOverpassJSON(overpassJSON, callbackNode) {
     if (p.type == 'node') {
         p.coordinates = [p.lon, p.lat];
         p.geometry = {type: 'Point', coordinates: p.coordinates};
-        p.tags.id=p.id;
+        p.tags.id=p.id; // openstreetmap object_id
         nodes[p.id] = p;
         if (typeof callbackNode === 'function') callbackNode(p);
     }

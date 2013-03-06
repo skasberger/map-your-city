@@ -1,3 +1,17 @@
+#used
+Git + GitHub
+Flask
+- SQLAlchemy
+- Jinja
+- Werkzeug
+Sublime
+overpass API
+Python
+jQuery
+jQuery mobile
+Javascript
+leaflet.js
+
 
 * REQUIREMENTS
 Develop a location based game for the Location-based Service Course, which is useful for the Open Street Map community worldwide.

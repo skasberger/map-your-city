@@ -10,23 +10,92 @@
 	<h1>Game Setup</h1>
 </div>
 <div id="content" height="100%" data-role="content">
-	Player: {{ g.player.username }}
-
-	<label for="slider-0">Radius:</label>
-	<input type="range" name="radius" id="slider-0" value="200" min="20" max="500"  />
-
-	<div data-role="fieldcontain">
-		<fieldset data-role="controlgroup">
-			<label for="osmobject-restaurant">Restaurant</label>
-			<input type="checkbox" name="osmobject-restaurant" id="osmobject-restaurant" class="custom" />
-			<label for="osmobject-bar">Bar</label>
-			<input type="checkbox" name="osmobject-bar" id="osmobject-bar" class="custom" />
-			<label for="osmobject-bank">Bank</label>
-			<input type="checkbox" name="osmobject-bank" id="osmobject-bank" class="custom" />
-		</fieldset>
+	{% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+	<div align="center">
+		<h3>Logged in as: {{ g.player.username }}</h3>
+	</div>
+	<div data-role="collapsible" data-content-theme="b">
+		<h3 data-role="button">Create Game</h3>
+		<div data-role="fieldcontain" class="ui-hide-label">
+			<label for="gamename" class="ui-hidden-accessible">Game Title:</label>
+			<input type="text" name="gamename" id="gamename" value="" data-clear-btn="true" placeholder="Game Title" />
+		</div>
+		<div class="numTeams" id="numTeams" data-role="fieldcontain">
+			<fieldset data-role="controlgroup">
+				<label for="numTeams">Number of Teams:</label>
+				<input id="numTeams" name="gamemaxteams" value="2" min="2" max="4" data-highlight="true" type="range">
+			</fieldset>
+		</div>
+		<div class="numPlayersTeam" id="numPlayersTeam" data-role="fieldcontain">
+			<fieldset data-role="controlgroup">
+				<label for="numPlayersTeam">Number of Players:</label>
+				<input id="numPlayersTeam" name="gamemaxplayer" value="2" min="2" max="12" data-highlight="true"type="range">
+			</fieldset>
+		</div>
+		<div class="timelimit" id="timelimit" data-role="fieldcontain">
+			<fieldset data-role="controlgroup">
+				<label for="timelimit">Timelimit in Minutes</label>
+				<input id="timelimit" name="gameduration" value="2" min="1" max="360" data-highlight="true"type="range">
+			</fieldset>
+		</div>
+		<div data-role="fieldcontain" class="ui-hide-label">
+			<label for="gamesecret" class="ui-hidden-accessible">Game Secret</label>
+			<input type="text" name="gamesecret" id="gamesecret" value="" data-clear-btn="true" placeholder="Game Secret (leave empty for none)" />
+		</div>
+		<div class="gameobjects" id="gameobjects" data-role="fieldcontain">
+			<label for="gameobjects">Items to verify</label>
+			<fieldset data-role="controlgroup">
+				<label for="gameobjectrestaurant">Restaurant</label>
+				<input type="checkbox" name="gameobjectrestaurant" id="gameobjectrestaurant" class="custom" />
+				<label for="gameobjectbar">Bar</label>
+				<input type="checkbox" name="gameobjectbar" id="gameobjectbar" class="custom" />
+				<label for="gameobjectbank">Bank</label>
+				<input type="checkbox" name="gameobjectbank" id="gameobjectbank" class="custom" />
+			</fieldset>
+		</div>
+		<button data-disabled="false" id="send" class="ui-btn-hidden" type="button" data-theme="c" onclick="sendDataCreateGame();">Submit</button>
+	</div>
+	<div data-role="collapsible" data-content-theme="b">
+		<ul data-role="listview" data-divider-theme="b" data-inset="true">
+			<li data-role="list-divider" role="heading">Open Games (without secret)</li>
+			{% for game in Games %}
+			<li data-theme="c"><a  onclick="sendDataJoinGame({{ game.id }});" data-transition="slide">{{ game.gamempffa.name }} : {{ game.region }}</a></li>
+			{% endfor %}
+		</ul>
+		<h3 data-role="button">Join Game</h3>
+		<a href="{{url_for('setup_mp_ffa')}}" data-role="button" data-theme="a">Refresh List</a>
 	</div>
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
 	<li><a href="{{url_for('mp_ffa')}}" data-transition="fade" data-theme="b" data-icon="home">PLAY</a></li>
 </div>
-{% endblock %}
+
+<script>
+function sendDataCreateGame() {
+	$.getJSON('{{ url_for('create_mp_ffa') }}', {
+		GameName: $('input[name="gamename"]').val(),
+		GameRegion: 'graz',
+		GameDuration: $('input[name="gameduration"]').val(),
+		GameSecret: $('input[name="gamesecret"]').val(),
+		GameMaxTeams: $('input[name="gamemaxteams"]').val(),
+		GameMaxPlayers: $('input[name="gamemaxplayers"]').val(),
+		GameObjectRestaurant: $('input[name="gameobjectrestaurant"]').is(':checked'),
+		GameObjectBar: $('input[name="gameobjectbar"]').is(':checked'),
+		GameObjectBank: $('input[name="gameobjectbank"]').is(':checked'),
+	}, 
+	function(data) {
+		alert(data.result);
+	});
+	return true;
+}
+
+function sendDataJoinGame(gameid) {
+	$.getJSON('{{ url_for('join_mp_ffa') }}', {
+		GameID: gameid
+	}, 
+	function(data) {
+		alert(data.result);
+	});
+	return true;
+}
+</script>{% endblock %}
