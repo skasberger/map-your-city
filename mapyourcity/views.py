@@ -65,7 +65,6 @@ def logout():
   g.player = None
   return redirect(url_for('login'))
 
-
 # COMMENTS
 @app.route('/verify-osm')
 def verifyOsm():
@@ -75,7 +74,10 @@ def verifyOsm():
   object_name = request.args.get('ObjectName', '', type=str)
   object_type = request.args.get('ObjectType', '', type=str)
   object_latlng = request.args.get('ObjectLatLng', '', type=str)
-  object_attribute = request.args.get('ObjectAttr', '', type=str)
+  object_attribute = []
+  object_attribute.append(request.args.get('ObjectAttrWheel', '', type=str))
+  object_attribute.append(request.args.get('ObjectAttrVeg', '', type=str))
+  object_attribute.append(request.args.get('ObjectAttrSmo', '', type=str))
   score = History(g.player.game.id, g.player.id,'osm')
   history_id = g.player.score.update(1)
   geo = HistoryGeo(history_id, object_id, object_name, object_type, object_attribute, object_latlng)

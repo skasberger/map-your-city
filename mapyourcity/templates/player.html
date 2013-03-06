@@ -12,11 +12,12 @@
 	<table>
 	</table>
 	<b>E-Mail: </b> {{ g.player.email }}<br/>
-	<b>Region: </b> {{ g.player.region }}<br/>
+	<b>Region: </b> {{ g.player.actual_region|capitalize }}<br/>
+	<b>Country: </b> {{ g.player.country|capitalize }}<br/>
 	<b>Playing since: </b> {{ g.player.created_at }}<br/>
-	<b>Last seen: </b> {{ g.player.last_login }}<br/>
-	<b>Score: </b> {{ g.player.score.points_all }} Points<br/>
-	<b>Score this week: </b> {{ g.player.score.points_week }} Points<br/>
+	<b>Last login: </b> {{ g.player.last_login }}<br/>
+	<b>Score: </b> {{ g.player.score.score_all }} Point{% if g.player.score.score_all > 1 %}s{% endif %}<br/>
+	<b>Score this week: </b> {{ g.player.score.score_week }} Point{% if g.player.score.score_all > 1 %}s{% endif %}<br/>
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
 	<ul>

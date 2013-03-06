@@ -140,6 +140,9 @@ class GameMpFfa(db.Model):
 	pw_hash = db.Column(db.String(160))
 	max_player = db.Column(db.Integer)
 	num_teams = db.Column(db.Integer)
+	wheelchair = db.Column(db.Boolean)
+	smoking = db.Column(db.Boolean)
+	vegetarian = db.Column(db.Boolean)
 
 	def __init__(self, duration, password, max_player, num_teams):
 		self.duration = duration
@@ -149,6 +152,9 @@ class GameMpFfa(db.Model):
 	
 	def get_hash(self, password):
 		return generate_password_hash(password)
+
+	#def set_geoobjects(self, ):
+		
 
 	def __repr__(self):
 		'<SP Game Info %r>' % (self.session_id)

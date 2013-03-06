@@ -23,24 +23,24 @@
 		</fieldset>
 		<fieldset data-role="controlgroup" data-type="horizontal">
         	<legend>Wheelchair</legend>
-        	<input type="radio" name="wheelchair-yes" id="wheelchair-yes" value="yes">
+        	<input type="radio" name="wheelchair" id="wheelchair-yes" value="yes">
         	<label for="wheelchair-yes">Yes</label>
-        	<input type="radio" name="wheelchair-no" id="wheelchair-no" value="no">
+        	<input type="radio" name="wheelchai" id="wheelchair-no" value="no">
         	<label for="wheelchair-no">No</label>
     	</fieldset>
 	    <fieldset data-role="controlgroup" data-type="horizontal">
         	<legend>Smoking</legend>
-        	<input type="radio" name="smoking-yes" id="smoking-yes" value="yes">
+        	<input type="radio" name="smoking" id="smoking-yes" value="yes">
         	<label for="smoking-yes">Yes</label>
-        	<input type="radio" name="smoking-no" id="smoking-no" value="no">
+        	<input type="radio" name="smoking" id="smoking-no" value="no">
         	<label for="smoking-no">No</label>
     	</fieldset>
 	    <fieldset data-role="controlgroup" data-type="horizontal">
-        	<legend>Vegan</legend>
-        	<input type="radio" name="vegan-yes" id="vegan-yes" value="yes">
-        	<label for="vegan-yes">Yes</label>
-        	<input type="radio" name="vegan-no" id="vegan-no" value="no">
-        	<label for="vegan-no">No</label>
+        	<legend>Vegetarian</legend>
+        	<input type="radio" name="vegetarian" id="vegetarian-yes" value="yes">
+        	<label for="vegetarian-yes">Yes</label>
+        	<input type="radio" name="vegetarian" id="vegetarian-no" value="no">
+        	<label for="vegetarian-no">No</label>
     	</fieldset>
 	</form>
 	<button data-disabled="false" id="send" class="ui-btn-hidden" type="button" data-theme="c" onclick="sendData();">Submit</button>
@@ -53,62 +53,71 @@
 var map={};
 var userMarker;
 
-	$(function () {
-		$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);
-		$("#editObject").height($('html').height()-$("#nav").height()-$("#header").height()-1);
-		map = initMap();
-		map.zoomIn();
-		userMarker = L.marker(new L.LatLng(50.5, 30.5)).addTo(map);
-		map.on('locationfound', onLocationFound);
-		map.on('moveend', loadPoi);
-		loadPoi();
-		map.locate({watch: true, setView: true, maxZoom: 17, enableHighAccuracy: true});
+$(function () {
+	$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);
+	$("#editObject").height($('html').height()-$("#nav").height()-$("#header").height()-1);
+	map = initMap();
+	map.zoomIn();
+	userMarker = L.marker(new L.LatLng(50.5, 30.5), { title: '{{ g.player.username}}' }).addTo(map);
+	map.on('locationfound', onLocationFound);
+	map.on('moveend', loadGeoobjects);
+	loadGeoobjects();
+	map.locate({watch: true, setView: true, maxZoom: 17, enableHighAccuracy: true});
+});
+
+function sendData() {
+	$.getJSON('{{ url_for('verifyOsm') }}', {
+		ObjectName: $('input[name="object_name"]').val(),
+		ObjectId: $('input[name="object_id"]').val(),
+		ObjectType: $('input[name="object_type"]').val(),
+		ObjectAttrWheel: $('input[name="wheelchair"]').val(),
+		ObjectAttrVeg: $('input[name="vegetarian"]').val(),
+		ObjectAttrSmo: $('input[name="smoking"]').val(),
+	}, 
+	function(data) {
+		$("#title").text("Score: "+data.result);
+		$('#map').show();
+		$('#editObject').hide();
+	});
+	return false;
+}
+
+function onLocationFound(e) {
+	userMarker.setLatLng(e.latlng);
+	userMarker.update();
+}
+
+function onLocationError(e) {
+	alert(e.message);
+}
+
+function loadGeoobjects() {
+	if (map.getZoom() < 15) { return; }
+	var restaurantIcon = L.icon({
+		iconUrl: '/static/images/icons/restaurant.png',
+		iconSize: new L.Point(24, 24),
+		iconAnchor: new L.Point(8, 8),
+	});
+	var barIcon = L.icon({
+		iconUrl: '/static/images/icons/bar.png',
+		iconSize: new L.Point(24, 24),
+		iconAnchor: new L.Point(8, 8),
+	});
+	var bankIcon = L.icon({
+		iconUrl: '/static/images/icons/bank.png',
+		iconSize: new L.Point(24, 24),
+		iconAnchor: new L.Point(8, 8),
 	});
 
-	function sendData() {
-		$.getJSON('{{ url_for('verifyOsm') }}', {
-			ObjectName: $('input[name="name"]').val(),
-			ObjectId: $('input[name="osm_id"]').val(),
-			ObjectType: $('input[name="type"]').val(),
-			ObjectAttr: $('input[name="wheelchair"]').val(),
-		}, 
-		function(data) {
-			$("#title").text("Score: "+data.result);
-			$('#map').show();
-			$('#editObject').hide();
-		});
-		return false;
-	}
+	var overpassRestaurants = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=restaurant];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
+	var overpassBars = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=bar];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
+	var overpassBanks = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=bank];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
 
-	function onLocationFound(e) {
-		userMarker.setLatLng(e.latlng);
-		userMarker.update();
-	}
-
-	function onLocationError(e) {
-		alert(e.message);
-	}
-
-	function loadPoi() {
-		if (map.getZoom() < 15) { return; }
-		var restaurantIcon = L.icon({
-			iconUrl: '/static/images/icons/48-fork-and-knife.png',
-			iconSize: new L.Point(24, 24),
-			iconAnchor: new L.Point(8, 8),
-		});
-		var barIcon = L.icon({
-			iconUrl: '/static/images/icons/88-beer-mug.png',
-			iconSize: new L.Point(24, 24),
-			iconAnchor: new L.Point(8, 8),
-		});
-
-		var overpassRestaurants = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=restaurant];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
-		var overpassBars = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=bar];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
-
-		function bindPopupOnData(data) {
-			var lmarker = L.marker([data.lat, data.lon], {
-				icon: L.icon({iconUrl: '/static/images/icons/'+data.tags.amenity+'.png', iconSize: new L.Point(16, 16), iconAnchor: new L.Point(8, 8)}),
-				title: data.tags.name
+	function bindPopupOnData(data) {
+		
+		var lmarker = L.marker([data.lat, data.lon], {
+			icon: L.icon({iconUrl: '/static/images/icons/'+data.tags.amenity+'.png', iconSize: new L.Point(16, 16), iconAnchor: new L.Point(8, 8)}),
+			title: data.tags.name
 			});
 			//lmarker.bindPopup(fillPopup(data.tags)).addTo(map);
 			lmarker.on('click',function(e) {
@@ -118,10 +127,9 @@ var userMarker;
     				$("input#object_name").val(data.tags.name);
     				$("input#object_type").val(data.tags.amenity);
     				$("input#object_id").val(data.tags.id);
-    				} else { alert("Ausser Reichweite"); //Durch bessere Anzeige ersetzen..
-    			} 
+    			} else { lmarker.bindPopup("Too far away").openPopup(); }
 			});
-			lmarker.addTo(map);
+			if(lmarker.getLatLng().distanceTo(userMarker.getLatLng())<1000) {lmarker.addTo(map); }
 		}
 
 		function nodeFunction(data) {
@@ -135,15 +143,16 @@ var userMarker;
 
 		$.getJSON(overpassRestaurants, handleNodeWayRelations);
 		$.getJSON(overpassBars, handleNodeWayRelations);
-	}
-	$(window).resize(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
+		$.getJSON(overpassBanks, handleNodeWayRelations);
+}
+$(window).resize(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
 </script>
 	<div id="content" data-role="content"></div>
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
 	<ul>
 		<li><a href="{{url_for('main')}}" data-transition="fade" data-theme="b" data-icon="home">Menu</a></li>
-		<li><a href="{{url_for('scores')}}" data-transition="fade" data-theme="b" data-icon="grid">Scores</a></li>
+		<li><a href="{{url_for('scores')}}" data-transition="fade" data-theme="b" data-icon="star">Scores</a></li>
 		<li><a href="{{url_for('player')}}" data-transition="fade" data-theme="b" data-icon="gear">Player</a></li>
 		<li><a href="{{url_for('help')}}" data-transition="fade" data-theme="b" data-icon="grid">Help</a></li>
 	</ul>
