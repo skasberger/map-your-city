@@ -76,10 +76,9 @@ def verifyOsm():
   object_type = request.args.get('ObjectType', '', type=str)
   object_latlng = request.args.get('ObjectLatLng', '', type=str)
   object_attribute = request.args.get('ObjectAttr', '', type=str)
-  print object_latlng
   score = History(g.player.game.id, g.player.id,'osm')
   history_id = g.player.score.update(1)
-  geo = HistoryGeo(history_id,object_id, object_name,object_type, object_attribute, object_latlng)
+  geo = HistoryGeo(history_id, object_id, object_name, object_type, object_attribute, object_latlng)
   db.session.add(score)
   db.session.add(geo)
   db.session.commit()

@@ -8,16 +8,27 @@
 <div id="header" data-theme="b" data-role="header">
 	<h1>Map Your City</h1>
 </div>
-<div id="map" height="100%"/>
 	<div id="content" data-role="content">
 		<h1>Highscore Toplist</h1>
-		<ul id="score">
+		<table data-role="table" id="score-table" class="ui-responsive table-stroke">
+  			<thead>
+    			<tr>
+      				<th style="padding-right:2em;" data-priority="1">Rank</th>
+      				<th style="padding-right:2em;" data-priority="2">Username</th>
+      				<th style="padding-right:2em;" data-priority="3">Score</th>
+    			</tr>
+  			</thead>
 			{% for score in Scores %}
-    		<li>{{ score.username }} : {{ score.score_all }}</li>
+  			<tbody>
+ 				<tr>
+      				<td><strong>{{ loop.index }}</strong></td>
+      				<td>{{ score.username }}</td>
+      				<td>{{ score.score_all }}</td>
+    			</tr>
+			</tbody>
     		{% endfor %}
-    	</ul>
+		</table>
     </div> 
-</div>
 <div id="nav" data-role="navbar" data-iconpos="top">
 	<ul>
 		<li><a href="{{url_for('main')}}" data-transition="fade" data-theme="b" data-icon="grid">Menu</a></li>
