@@ -103,8 +103,10 @@ def sp_ffa():
   #restaurant = request.args.get('restaurant', 0, type=str)
   #bar = request.args.get('bar', 0, type=str)
   #bank = request.args.get('bank', 0, type=str)
+  #radius = request.args.get('radius', 0, type=int)
   g.player.game = Game(g.player.id, 'graz', 1, 'ffa')
   g.player.game.set_objecttypes(True, True, True)
+  #g.player.game.set_radius(radius)
   db.session.commit()  
   return render_template('game_sp_ffa.html')
 

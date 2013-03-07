@@ -135,6 +135,7 @@ class Game(db.Model):
 	object_restaurant = db.Column(db.Boolean)
 	object_bar = db.Column(db.Boolean)
 	object_bank = db.Column(db.Boolean)
+	radius = db.Column(db.Integer)
 	session_start = db.Column(db.Date())
 	session_end = db.Column(db.Date())
 	session_status = db.Column(db.String(20))
@@ -156,6 +157,9 @@ class Game(db.Model):
 		self.object_bar = bar
 		self.object_bank = bank
 		
+	def set_radius(self, radius):
+		self.radius = radius
+
 	def close_game(self):
 		self.session_status = 'game closed'
 		self.is_active=False
