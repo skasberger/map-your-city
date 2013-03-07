@@ -14,20 +14,31 @@
 	<p data-role="button" data-inline="true">Player: {{ g.player.username }}</p>
 
 	<label for="slider-0">Radius:</label>
-	<input type="range" name="radius" id="slider-0" value="200" min="20" max="500"  />
+	<input type="range" name="setupSpFFaRadius" id="slider-0" value="200" min="20" max="500"  />
 
 	<div data-role="fieldcontain">
 		<fieldset data-role="controlgroup">
 			<label for="osmobject-restaurant">Restaurant</label>
-			<input type="checkbox" name="osmobject-restaurant" id="osmobject-restaurant" class="custom" />
+			<input type="checkbox" name="osmobject-restaurant" id="osmobject-restaurant" class="custom" value="1"/>
 			<label for="osmobject-bar">Bar</label>
-			<input type="checkbox" name="osmobject-bar" id="osmobject-bar" class="custom" />
+			<input type="checkbox" name="osmobject-bar" id="osmobject-bar" class="custom"/>
 			<label for="osmobject-bank">Bank</label>
-			<input type="checkbox" name="osmobject-bank" id="osmobject-bank" class="custom" />
+			<input type="checkbox" name="osmobject-bank" id="osmobject-bank" class="custom"/>
 		</fieldset>
 	</div>
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
 	<li><a href="{{url_for('sp_ffa')}}" data-transition="fade" data-theme="b" data-icon="home">PLAY</a></li>
+	<!--<button data-disabled="false" id="sendSetupSpFfa" class="ui-btn-hidden" type="submit" data-theme="b" name="sendSetupSpFfa" onclick="submitForm();">Submit</button>-->
 </div>
+<script>
+/*function submitForm() {
+	$.getJSON('{{ url_for('sp_ffa') }}', {
+		restaurant: $('input[name=osmobject-restaurant]').val(),
+		bar: $('select.osmobject-bar option:selected').val(),
+		bank: $('input:checkbox:checked').val(), 
+		radius: $('input:checkbox:checked').val(), 
+	});
+}*/
+</script>
 {% endblock %}

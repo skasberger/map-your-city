@@ -2,6 +2,7 @@ from mapyourcity import app, db
 from mapyourcity.models import Player, HistoryGeo, Game, Team, Scores, History, Game_mp_ffa
 from flask import Flask, request, session, g, jsonify, redirect, url_for, abort, render_template, flash
 from datetime import datetime
+import json
 
 # COMMENTS
 @app.before_request
@@ -78,7 +79,6 @@ def verifyOsm():
   object_attribute.append(request.args.get('ObjectAttrWheel', '', type=str))
   object_attribute.append(request.args.get('ObjectAttrVeg', '', type=str))
   object_attribute.append(request.args.get('ObjectAttrSmo', '', type=str))
-  g.player.set_actual_region(object_latlng)
   score = History(g.player.game.id, g.player.id,'osm')
   history_id = g.player.score.update(1)
   geo = HistoryGeo(history_id, object_id, object_name, object_type, object_attribute, object_latlng)
@@ -99,11 +99,12 @@ def setup_sp_ffa():
 def sp_ffa():
   if not g.player:
     return redirect(url_for('login'))
-  #newGame = GameSp(player_id=1, region='graz', game_type='ffa')
-  #db.session.add(newGame)
-  #db.session.commit()
   #session['GameID'] = GameSp.query.filter_by(session_start=now).id
-  g.player.game = Game(player_id=g.player.id, region='graz', game_type=1,game_mode='ffa')
+  #restaurant = request.args.get('restaurant', 0, type=str)
+  #bar = request.args.get('bar', 0, type=str)
+  #bank = request.args.get('bank', 0, type=str)
+  g.player.game = Game(g.player.id, 'graz', 1, 'ffa')
+  g.player.game.set_objecttypes(True, True, True)
   db.session.commit()  
   return render_template('game_sp_ffa.html')
 
@@ -147,17 +148,76 @@ def create_mp_ffa():
   if g.player.game is not None:
     g.player.game.close_game()
   g.player.game = Game(g.player.id, game_region,2, 'ffa')
+  g.player.game.gamempffa = Game_mp_ffa(game_name,game_duration,game_secret, game_maxteams, game_maxplayers,game_object_restaurant,game_object_cafe,game_object_bar,game_object_snack)
+  for i in range(game_maxteams):
+    g.player.game.team = Team(g.player.game.id, 'Team '+str(i+1), '#', g.player.game)
   g.player.game.gamempffa = Game_mp_ffa(game_name,game_duration,game_secret, game_maxteams, game_maxplayers,game_attribute_wheelchair,game_attribute_smoking,game_attribute_vegetarian,game_object_restaurant,game_object_cafe,game_object_bar,game_object_snack)
   db.session.commit()
   return jsonify(result=g.player.game.gamempffa.name)
 
-@app.route('/setup/mp/ffa/join')
-def join_mp_ffa():
+@app.route('/mp/ffa/update')
+def mp_ffa_update():
   if not g.player:
     return jsonify(result="You must be logged in to create a game!")
-  g.player.game = Game.query.filter_by(id=request.args.get('GameID',int)).first()
+  playerLat = request.args.get('PlayerLat',int)
+  playerLng = request.args.get('PlayerLng',int)
+  g.player.set_position(playerLat,playerLng)
+  db.session.commit();
+  response='{"players":['
+  for player in g.player.game.players.all():
+    if player.lat is not None:
+      response += '{"username":"'+player.username+'" , "lat":"'+str(player.lat)+'","lng":"'+str(player.lng)+'"},'
+  response+=']}'
+  return json.dumps(response)
+
+@app.route('/setup/mp/ffa/joingame/<int:gameid>')
+def setup_mp_ffa_joingame(gameid):
+  if not g.player:
+    return 'Error'
+  g.player.game = Game.query.filter_by(id=gameid).first()
   db.session.commit()
-  return jsonify(result=g.player.game.gamempffa.name)
+  teams = g.player.game.teams.all()
+  return render_template('setup_mp_ffa_jointeam.html',teams = teams )
+
+@app.route('/setup/mp/ffa/jointeam/<int:teamid>')
+def setup_mp_ffa_jointeam(teamid):
+  error=''
+  if not g.player:
+    error='You must be logged in!'
+    return render_template('login.html', error = error)
+  if not g.player.game:
+    error ='You must create or join a game'
+    return render_template('setup_mp_ffa.html', Games = Game.query.filter_by(is_active=True),error=error)
+  g.player.game.team = Team.query.filter_by(id=teamid).first()
+  db.session.commit()
+  return redirect(url_for('setup_mp_ffa_waitinghall'))
+
+@app.route('/setup/mp/ffa/waitinghall')
+def setup_mp_ffa_waitinghall():
+  error=''
+  if not g.player:
+    error='You must be logged in!'
+    return render_template('login.html', error = error)
+  if not g.player.game:
+    error ='You must create or join a game'
+    return render_template('setup_mp_ffa.html', Games = Game.query.filter_by(is_active=True),error=error)
+  if not g.player.team:
+    error ='You must join a team'
+    return render_template('setup_mp_ffa_jointeam.html', Games = Game.query.filter_by(is_active=True),error=error)
+  return render_template('setup_mp_ffa_waitinghall.html',teams = teams )
+
+
+@app.route('/setup/mp/ffa/getgames')
+def setup_mp_ffa_getgames():
+  if not g.player:
+    return jsonify(result="You must be logged in to create a game!")
+  print 'test'
+  response='{"games":['
+  for game in Game.query.filter_by(is_active=True):
+    print game.gamempffa.name
+    response += '{"gamename":"'+game.gamempffa.name+'" , "region":"'+game.region+'","duration":"'+str(game.gamempffa.duration)+'"},'
+  response+=']}'
+  return json.dumps(response)
 
 # COMMENTS
 @app.route('/mp/ffa')
@@ -213,8 +273,10 @@ def scores():
   #if(datetime.weekday()==1):
     #Player.query.get().all().scores.all().reset_points_week()
   #scores=Scores.query.order_by('score_all desc').limit(10)
-  players = g.player.game.players.all()
-  return render_template('scores.html', Players=players)
+  #players = g.player.game.players.all()
+  #return render_template('scores.html', Players=players)
+  scores = Scores.query.order_by('score_all desc').limit(10)
+  return render_template('scores.html', Scores=scores)
 
 # COMMENTS
 # @app.route('/score/<playerid>')

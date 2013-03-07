@@ -59,11 +59,11 @@
 		<ul data-role="listview" data-divider-theme="b" data-inset="true">
 			<li data-role="list-divider" role="heading">Open Games (without secret)</li>
 			{% for game in Games %}
-			<li data-theme="c"><a  onclick="sendDataJoinGame({{ game.id }});" data-transition="slide">{{ game.gamempffa.name }} : {{ game.region }}</a></li>
+			<li data-theme="c"><a  href="{{ url_for('setup_mp_ffa_joingame',gameid=game.id) }}" data-transition="slide">{{ game.gamempffa.name }} : {{ game.region }}</a></li>
 			{% endfor %}
 		</ul>
 		<h3 data-role="button">Join Game</h3>
-		<a href="{{url_for('setup_mp_ffa')}}" data-role="button" data-theme="a">Refresh List</a>
+		<a onlcick="updateTeams();" data-role="button" data-rel="popup" data-theme="a">Refresh List</a>
 	</div>
 </div>
 <div id="nav" data-role="navbar" data-iconpos="top">
@@ -89,13 +89,26 @@ function sendDataCreateGame() {
 	return true;
 }
 
-function sendDataJoinGame(gameid) {
-	$.getJSON('{{ url_for('join_mp_ffa') }}', {
-		GameID: gameid
-	}, 
+function updateGames() {
+	$.getJSON('{{ url_for('setup_mp_ffa_getgames') }}', {data:1}, 
 	function(data) {
-		alert(data.result);
+		var game = eval ("(" + data + ")");
+		for (var i = 0; i < game.games.length; i++) {
+    	alert(game.games[i].gamename);
+    	}
 	});
-	return true;
+	return false;
 }
-</script>{% endblock %}
+
+function updateTeams() {
+	$.getJSON('test', {data:1}, 
+	function(data) {
+		var team = eval ("(" + data + ")");
+		for (var i = 0; i < team.teams.length; i++) {
+   		alert(team.teams[i].teamname);
+   		}
+	});
+	return false;
+}
+</script>
+{% endblock %}

@@ -15,7 +15,10 @@ class Player(db.Model):
 	avatar = db.Column(db.String(30))
 	color = db.Column(db.String(10))
 	home_region = db.Column(db.String(80))
-	actual_region = db.Column(db.String(80))
+	#actual_region = db.Column(db.String(80))
+	is_ready = db.Column(db.Boolean)
+	lat = db.Column(db.Float)
+	lng = db.Column(db.Float)
 	country = db.Column(db.String(80))
 	osm_login = db.Column(db.String(50), unique=True)
 	osm_hash = db.Column(db.String(160))
@@ -25,6 +28,8 @@ class Player(db.Model):
 	score_id = db.Column(db.Integer, db.ForeignKey('scores.id'))
 	score = db.relationship('Scores', backref=db.backref('players', lazy='dynamic'))
 	theme = db.Column(db.String(15))
+	team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
+	team = db.relationship('Team', backref=db.backref('players', lazy='dynamic'))
 	
 	def __init__(self, username, email, password):
 		self.username = username
@@ -33,6 +38,7 @@ class Player(db.Model):
 		self.created_at = datetime.now()
 		self.last_login = datetime.now()
 		self.score = Scores(self.username,self.id)
+		self.is_ready =False
 
 	def get_hash(self, password):
 		return generate_password_hash(password)
@@ -48,6 +54,10 @@ class Player(db.Model):
 
 	def set_color(self, color):
 		self.color = color
+
+	def set_position(self, lat,lng):
+		self.lat = lat
+		self.lng = lng 
 
 	def set_actual_region(self, actual_region):
 		self.actual_region = actual_region 
@@ -73,6 +83,9 @@ class Player(db.Model):
 
 	def set_last_login(self):
 		self.last_login = datetime.now()
+
+	def set_ready(self):
+		self.is_ready = True
 
 	def __repr__(self):
 		'<Player %r>' % (self.username)
@@ -119,6 +132,9 @@ class Game(db.Model):
 	region = db.Column(db.String(25))
 	game_type = db.Column(db.Integer) #1=Singleplayer/2=Multiplayer
 	game_mode = db.Column(db.String(25)) #FFA/MapperOfTheWeek/...
+	object_restaurant = db.Column(db.Boolean)
+	object_bar = db.Column(db.Boolean)
+	object_bank = db.Column(db.Boolean)
 	session_start = db.Column(db.Date())
 	session_end = db.Column(db.Date())
 	session_status = db.Column(db.String(20))
@@ -130,10 +146,16 @@ class Game(db.Model):
 		self.player_id = player_id
 		self.region = region
 		self.game_type = game_type
+		self.game_mode = game_mode
 		self.session_start = datetime.now()
 		self.session_status = 'started'
 		self.is_active = True
 
+	def set_objecttypes(self, restaurant, bar, bank):
+		self.object_restaurant = restaurant
+		self.object_bar = bar
+		self.object_bank = bank
+		
 	def close_game(self):
 		self.session_status = 'game closed'
 		self.is_active=False
@@ -149,11 +171,8 @@ class Game_mp_ffa(db.Model):
 	pw_hash = db.Column(db.String(160))
 	max_players = db.Column(db.Integer)
 	num_teams = db.Column(db.Integer)
-	object_restaurant = db.Column(db.Boolean)
-	object_bar = db.Column(db.Boolean)
-	object_bank = db.Column(db.Boolean)
 
-	def __init__(self, name, duration, password, num_teams, max_players, verify_wheelchair,verify_smoking,verify_vegetarian,object_restaurant,object_bar,object_bank):
+	def __init__(self, name, duration, password, num_teams, max_players, verify_wheelchair, verify_smoking, verify_vegetarian, object_restaurant, object_bar, object_bank):
 		self.name = name
 		self.duration = duration
 		self.pw_hash = self.get_hash(password)
@@ -176,13 +195,24 @@ class Game_mp_ffa(db.Model):
 class Team(db.Model):
 	id = db.Column(db.Integer, primary_key=True, unique=True)
 	game_id = db.Column(db.Integer)
+	playerscount = db.Column(db.Integer)
 	name = db.Column(db.String(50))
 	color = db.Column(db.String(7))
+	game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
+	game = db.relationship('Game', backref=db.backref('teams', lazy='dynamic'))
+	teamscore = db.Column(db.Integer)
 	
-	def __init__(self, game_id, name, color):
+	def __init__(self, game_id, name, color, game):
 		self.game_id = game_id
 		self.name = name
 		self.color = color
+		self.game = game
+		self.playerscount=0
+
+	def update_playerscount(self):
+		self.playerscount+=1
+
+	#def update_teamscore(self, id, score):
 
 	def __repr__(self):
 		'<Team %r>' % (self.name)

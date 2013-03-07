@@ -7,6 +7,7 @@
 {% block body %}
 <div id="header" data-theme="b" data-role="header">
 	<h1 id="title">Map Your City</h1>
+	<p id="score" class="ui-btn-right"style="margin:7px 7px 5px 0px"></p>
 </div>
 <div id="editObject" style="display: none">
 	<form>
@@ -48,24 +49,44 @@
 </div>
 <div id="map"/>
 <script>
-//$(document).ready(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
 
 var map={};
 var userMarker;
+var markersDone;
 
 $(function () {
 	$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);
 	$("#editObject").height($('html').height()-$("#nav").height()-$("#header").height()-1);
 	map = initMap();
 	map.zoomIn();
-	userMarker = L.marker(new L.LatLng(50.5, 30.5), { title: '{{ g.player.username}}' }).addTo(map);
+	markersDone=new Array();
+	userMarker = L.marker(new L.LatLng(47, 15), { title: '{{ g.player.username}}' }).addTo(map);
 	map.on('locationfound', onLocationFound);
 	map.on('moveend', loadGeoobjects);
 	loadGeoobjects();
 	map.locate({watch: true, setView: true, maxZoom: 17, enableHighAccuracy: true});
+	//setInterval ( update(), 10000 );
+	// remove attributes of non selected geoobject-types
+	if(('{{g.player.game.object_restaurant }}').toLowerCase() === 'true') {
+		$('#smoking').show();
+		$('#vegetarian').show();
+		$('#wheelchair').show();
+	}
+	if(('{{g.player.game.object_bar }}').toLowerCase() === 'true') {
+		$('#wheelchair').show();
+		$('#vegetarian').hide();
+		$('#smoking').show();
+	}
+	if(('{{g.player.game.object_bank }}').toLowerCase() === 'true') {
+		$('#wheelchair').show();
+		$('#vegetarian').hide();
+		$('#smoking').hide();
+	}
 });
 
 function sendData() {
+	markersDone.push($('input[name="object_id"]').val());
+	//alert($('input[name="osm_id"]').val());
 	$.getJSON('{{ url_for('verifyOsm') }}', {
 		ObjectName: $('input[name="object_name"]').val(),
 		ObjectId: $('input[name="object_id"]').val(),
@@ -73,6 +94,7 @@ function sendData() {
 		ObjectAttrWheel: $('input[name="wheelchair"]').val(),
 		ObjectAttrVeg: $('input[name="vegetarian"]').val(),
 		ObjectAttrSmo: $('input[name="smoking"]').val(),
+		ObjectLatLng: $('input[name="object_latlng"]').val()
 	}, 
 	function(data) {
 		$("#title").text("Score: "+data.result);
@@ -82,9 +104,26 @@ function sendData() {
 	return false;
 }
 
+function update() {
+	$.getJSON('{{ url_for('mp_ffa_update') }}', {
+		PlayerLat: userMarker.getLatLng().lat,
+		PlayerLng: userMarker.getLatLng().lng
+	}, 
+	function(data) {
+		var player = eval ("(" + data + ")");
+		for (var i = 0; i < player.players.length; i++) {
+   		L.marker([player.players[i].lat, player.players[i].lng]).addTo(map);
+   		}
+	});
+	return false;
+}
+
 function onLocationFound(e) {
 	userMarker.setLatLng(e.latlng);
 	userMarker.update();
+	map.setView(e.latlng);
+	map.setZoom(17);
+	update();
 }
 
 function onLocationError(e) {
@@ -109,12 +148,17 @@ function loadGeoobjects() {
 		iconAnchor: new L.Point(8, 8),
 	});
 
-	var overpassRestaurants = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=restaurant];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
-	var overpassBars = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=bar];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
-	var overpassBanks = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=bank];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
+	if(('{{g.player.game.object_restaurant }}').toLowerCase() === 'true') {
+		var overpassRestaurants = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=restaurant];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
+	}
+	if(('{{g.player.game.object_bar }}').toLowerCase() === 'true') {
+		var overpassBars = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=bar];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
+	}
+	if(('{{g.player.game.object_banks }}').toLowerCase() === 'true') {
+		var overpassBanks = 'http://overpass-api.de/api/interpreter?data=[out:json];node(BBOX)[amenity=bank];out;'.replace(/(BBOX)/g, map.getBounds().toOverpassBBoxString());
+	}
 
-	function bindPopupOnData(data) {
-		
+	function bindPopupOnData(data) {		
 		var lmarker = L.marker([data.lat, data.lon], {
 			icon: L.icon({iconUrl: '/static/images/icons/'+data.tags.amenity+'.png', iconSize: new L.Point(16, 16), iconAnchor: new L.Point(8, 8)}),
 			title: data.tags.name
@@ -122,28 +166,45 @@ function loadGeoobjects() {
 			//lmarker.bindPopup(fillPopup(data.tags)).addTo(map);
 			lmarker.on('click',function(e) {
 				if(lmarker.getLatLng().distanceTo(userMarker.getLatLng())<200) { //200 m
-    				$('#map').toggle();
-    				$('#editObject').toggle();
-    				$("input#object_name").val(data.tags.name);
-    				$("input#object_type").val(data.tags.amenity);
-    				$("input#object_id").val(data.tags.id);
-    			} else { lmarker.bindPopup("Too far away").openPopup(); }
-			});
-			if(lmarker.getLatLng().distanceTo(userMarker.getLatLng())<1000) {lmarker.addTo(map); }
-		}
+					var deleted=false;
+	 				for(var i=0;i<markersDone.length;i++) {
+    					if(markersDone[i] == data.tags.id) {deleted=true;}
+					}
+    				if(deleted) {alert("Objekt wurde in diesem Spiel schon verifiziert!");}
+    				else{
+	    				$('#map').toggle();
+    					$('#editObject').toggle();
+    					$("input#object_name").val(data.tags.name);
+    					$("input#object_type").val(data.tags.amenity);
+    					$("input#object_id").val(data.tags.id);
+    					$("input#object_latlng").val("test");
+    				} else { lmarker.bindPopup("Too far away").openPopup(); 
+    			}
+    		}
+		});
+		if(lmarker.getLatLng().distanceTo(userMarker.getLatLng())<1000) {lmarker.addTo(map); }
+	}
 
-		function nodeFunction(data) {
-			if (! data.tags || ! data.tags.amenity ) return;
-			bindPopupOnData(data);
+	function nodeFunction(data) {
+		var deleted=false;
+		for(var i=0;i<markersDone.length;i++) {
+			if(markersDone[i] == data.tags.id) {deleted=true;}
 		}
+		if(!deleted) {bindPopupOnData(data);}
+	}
+	function handleNodeWayRelations(data) {
+		parseOverpassJSON(data, nodeFunction);
+	}
 
-		function handleNodeWayRelations(data) {
-			parseOverpassJSON(data, nodeFunction);
-		}
-
+	if(('{{g.player.game.object_restaurant }}').toLowerCase() === 'true') {
 		$.getJSON(overpassRestaurants, handleNodeWayRelations);
+	}
+	if(('{{g.player.game.object_bar }}').toLowerCase() === 'true') {
 		$.getJSON(overpassBars, handleNodeWayRelations);
+	}
+	if(('{{g.player.game.object_banks }}').toLowerCase() === 'true') {
 		$.getJSON(overpassBanks, handleNodeWayRelations);
+	}
 }
 $(window).resize(function(){$("#map").height($('html').height()-$("#nav").height()-$("#header").height()-1);});
 </script>

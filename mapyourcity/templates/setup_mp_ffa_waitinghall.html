@@ -1,0 +1,53 @@
+{% extends "layout_main.html" %}
+
+{% block title %}
+	Game
+{% endblock %}
+
+{% block body %}
+<div id="header" data-theme="b" data-role="header">
+	<a href="{{url_for('main')}}" data-theme="b" data-icon="back">back</a>
+	<h1>Waiting hall</h1>
+</div>
+<div id="content" height="100%" data-role="content">
+	{% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+<div align="center"><h3>Logged in as: {{ g.player.username }}</h3></div>
+		<ul data-role="listview" data-divider-theme="b" data-inset="true">
+            <li data-role="list-divider" role="heading">
+             Teams in current game
+            </li>
+            {% for team in teams %}
+            <li data-theme="c">
+    		<a  data-transition="slide">{{ team.name }} : {{ team.playerscount }} Player(s) in team</a>
+            </li>
+            {% endfor %}
+        </ul>
+		<a onlcick="updateTeams();" data-role="button" data-rel="popup" data-theme="a">Refresh List</a>
+	</div>
+<div id="nav" data-role="navbar" data-iconpos="top">
+	<li><a href="{{url_for('mp_ffa')}}" data-transition="fade" data-theme="b" data-icon="home">PLAY</a></li>
+</div>
+<script>
+/*function sendDataCreateGame() {
+		$.getJSON('{{ url_for('create_mp_ffa') }}', {
+			GameName: $('input[name="gamename"]').val(),
+			GameRegion: $('input[name="gameregion"]').val(),
+			GameDuration: $('input[name="gameduration"]').val(),
+			GameSecret: $('input[name="gamesecret"]').val(),
+			GameMaxTeams: $('input[name="gamemaxteams"]').val(),
+			GameMaxPlayers: $('input[name="gamemaxplayers"]').val(),
+			GameObjectRestaurant: $('input[name="gameobjectrestaurant"]').is(':checked'),
+			GameObjectCafe: $('input[name="gameobjectcafe"]').is(':checked'),
+			GameObjectBar: $('input[name="gameobjectbar"]').is(':checked'),
+			GameObjectSnack: $('input[name="gameobjectsnack"]').is(':checked'),
+			GameAttributeWheelchair: $('input[name="gameattributewheelchair"]').is(':checked'),
+			GameAttributeSmoking: $('input[name="gameattributesmoking"]').is(':checked'),
+			GameAttributeVegetarian: $('input[name="gameattributevegetarian"]').is(':checked')
+		}, 
+		function(data) {
+			alert(data.result);
+		});
+		return true;
+	}*/
+</script>
+{% endblock %}
